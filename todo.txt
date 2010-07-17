@@ -1,18 +1,11 @@
 TODO
 ------------------
 
-- emails are still sending improper data
-	- started is showing game creators name
-		may need to split the call to change the name for each
+- port ajax_helper to ajax functions and only have logic switches
+	in ajax_helper file
 
 - don't show success messages if email is not sent
 
 - preserve spaces in chats (copy code from messages) (port to WR)
 
-- auto delete finished games after 7 days (take code from webrisk)
-- auto delete expired games and players
-
 - search for TODO and fix all found
-
-- port ajax_helper to ajax functions and only have logic switches
-	in ajax_helper file
