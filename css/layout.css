@@ -1,0 +1,580 @@
+
+/* WebRisk layout */
+
+/* $Id: layout.css 27 2010-06-11 02:14:31Z Benjam $ */
+
+/*
+	all the colors for the styles are listed in the
+	c_{color_name}.css file.  they are pulled out for
+	ease of customization.  set your color by entering
+	the name of the css file you wish to use in the
+	config.inc.php file.
+*/
+
+/* basic styles */
+body {
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+	line-height: 1.5;
+	font-weight: normal;
+	font-family: sans-serif;
+}
+
+h1 {
+	height: 55px;
+	margin: 0 0 3px;
+	padding: 0;
+	font-size: 16px;
+	font-weight: bold;
+	text-indent: -9999em;
+	background: transparent url(../images/Quarto.png) no-repeat scroll 15px center;
+	border-bottom: 2px solid #000;
+}
+
+a {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+h1 a {
+	display: block;
+	text-decoration: none;
+	height: 100%;
+}
+
+a.help {
+	border: 1px solid #777;
+	font-weight: bold;
+	padding: 0 2px;
+	text-decoration: none;
+}
+a.help:hover {
+	border: 1px solid #999;
+}
+
+abbr,
+acronym {
+	border-bottom: 1px dashed #777;
+	cursor: help;
+}
+
+hr.fancy {
+	height: 5px;
+	margin: 1em;
+	background-color: #999;
+	border: 1px solid #777;
+}
+
+p {
+	margin: 1em 0;
+	line-height: 1.2;
+}
+
+fieldset {
+	padding: 5px;
+	margin: 5px;
+	border: 1px solid #777;
+}
+
+legend {
+	font-weight: bold;
+	font-size: larger;
+}
+
+.warning {
+	color: #C00;
+	font-weight: bold;
+}
+
+.notice {
+	color: #CC0;
+	font-weight: bold;
+}
+
+.highlight {
+	color: #00C;
+	font-weight: bold;
+}
+
+.instruction {
+	color: #AAA;
+}
+
+.caption {
+	margin: 1ex 0;
+}
+
+#date {
+	font-size: 10px;
+	font-weight: bold;
+	white-space: nowrap;
+	text-align: right;
+}
+
+
+/* links */
+#links {
+	float: right;
+	margin: 1em;
+	font-weight: bold;
+	color: #EEE;
+}
+
+#links a {
+	text-decoration: none;
+	padding: 0.3ex 0.75ex;
+	border: 1px solid transparent;
+	background-color: transparent;
+	color: #333;
+}
+
+#links a:hover {
+	border-color: #000;
+	background-color: #555;
+	color: #EEE;
+}
+
+/* fix some stupid IE7 float bug */
+*:first-child+html #links {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 5;
+}
+
+
+/* wrapper */
+#wrapper {
+	margin: 0;
+	padding: 0;
+}
+
+
+/* menu */
+#menuholder {
+	width: 1px;
+	overflow: visible;
+	float: left;
+}
+
+#menuholder div {
+	float: left;
+	margin: 3px;
+	margin-bottom: 2em;
+}
+
+#menuholder #mygames_title {
+	margin: 0;
+	white-space: nowrap;
+}
+
+#menu ,
+#mygames {
+	border: 1px solid #777;
+}
+
+#menu ul ,
+#mygames ul {
+	margin: 0;
+	padding: 0;
+}
+
+#menu li ,
+#mygames li {
+	text-indent: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none outside none;
+}
+
+*:first-child+html #menu li {
+	margin-left: -1.25em;
+}
+
+#menu a ,
+#mygames a {
+	text-align: right;
+	font-size: 10px;
+	padding: 6px 5px;
+	width: 160px;
+	white-space: nowrap;
+	margin: 0;
+	font-weight: bold;
+	text-decoration: none;
+	display: block;
+	color: #333;
+	background-color: #EEE;
+	border-bottom: 1px solid #555;
+}
+#mygames a {
+	white-space: normal;
+}
+
+#menu a:hover,
+#mygames a:hover {
+	color: #DDD;
+	background-color: #555;
+}
+
+#menu li.active a,
+#mygames li.active a {
+	color: #DDD;
+	background-color: #333;
+	border-color: #333;
+}
+
+#menu li.active .notice {
+	color: #99F;
+}
+
+/* notes */
+#sidebar {
+	float: right;
+	width: 160px;
+	overflow: visible;
+}
+
+#notes {
+	float: right;
+	width: 160px;
+	min-height: 300px;
+	padding: 5px;
+	margin: 3px;
+	background-color: #EEE;
+	border: 1px solid #777;
+}
+
+#sidebar #chatbox {
+	float: right;
+	width: 160px;
+	padding: 5px;
+	margin: 3px;
+	background-color: #EEE;
+	border: 1px solid #777;
+}
+
+#sidebar #chatbox input {
+	width: 95%;
+}
+
+#sidebar #chats {
+	height: 300px;
+}
+
+#sidebar .active {
+	position: relative;
+	top: 0;
+	right: 0;
+	width: 500px;
+}
+
+
+/* chats */
+#chatbox input[type=text] {
+	width: 90%;
+}
+
+#game_page #chatbox input[type=text] {
+	width: auto;
+}
+
+#chats {
+	height: 200px;
+	overflow: auto;
+}
+
+#chats dt {
+	background: #FFF;
+	color: #000;
+	font-weight: bold;
+	padding: 0 3px;
+}
+
+#chats dd {
+	padding: 0 3px;
+	border-bottom: 1px solid #000;
+}
+
+#chats img {
+	float: left;
+}
+
+#chats dt span {
+	float: right;
+	font-size: 80%;
+}
+
+/* main */
+h2 {
+	font-size: 14px;
+	font-weight: bold;
+	margin-bottom: 1ex;
+	border-bottom: 1px solid #777;
+}
+
+.type {
+	font-size: smaller;
+	padding-left: 2em;
+}
+.type .number {
+	font-weight: bold;
+	margin-right: 2em;
+}
+.type a {
+	margin: 0 2em;
+}
+
+#content {
+	margin: 3px 185px;
+}
+
+#content.full {
+	margin: 5px;
+}
+
+.stats {
+	width: 150px;
+	float: left;
+	margin: 3px;
+}
+
+
+#index_page .tableholder {
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+#index_page #chatbox {
+	border: 2px solid #AAA;
+}
+
+#index_page #chatbox input[type=text]{
+	width: 99%;
+}
+
+#index_page #chats {
+	height: 500px;
+	margin: 1em;
+}
+
+#index_page #chats dt {
+	height: 50px;
+	width: 150px;
+	float: left;
+	border-bottom: 3px solid #777;
+	padding: 5px;
+	margin: 0 20px 5px 0;
+	position: relative;
+	text-align: right;
+	background: transparent;
+}
+
+#index_page #chats span {
+	position: absolute;
+	bottom: 5px;
+	right: 5px;
+}
+
+#index_page #chats dd {
+	min-height: 50px;
+	border-bottom: 1px solid #AAA;
+	padding: 5px 5px 6px 5px;
+	margin: 0 0 6px 0;
+}
+
+/* messages */
+h2.subject,
+p.message {
+	width: 70ex;
+}
+
+.sender {
+	margin-left: 3em;
+	font-size: smaller;
+}
+
+.link_date {
+	float: right;
+	text-align: right;
+	width: 300px;
+}
+
+.link_date a {
+	float: left;
+}
+
+#content .sidebar {
+	float: right;
+	width: 300px;
+	margin-top: 10px;
+}
+
+#content form .buttons #delete {
+	float: right;
+}
+
+#content form .buttons .prevnext {
+	margin-bottom: 20px;
+}
+
+#content form .buttons .prevnext span {
+	padding: 0 10px;
+}
+
+#content #recipient_list {
+	margin-top: 20px;
+}
+
+#recipient_list ul {
+	margin:10px;
+}
+
+#recipient_list .unread {
+	font-weight: bold;
+}
+
+#recipient_list .deleted {
+	text-decoration: line-through;
+}
+
+.messageheader {
+	border-bottom: 1px solid #777;
+}
+
+.action select {
+	float: right;
+}
+
+
+/* footer */
+#footer {
+	font-size: 10px;
+	font-weight: bold;
+	text-align: center;
+	width: 100%;
+	line-height: 26px;
+	clear: both;
+	padding: 3px 0;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	z-index: 100;
+	background: #FFF;
+	border-top: 1px solid #BBB;
+}
+
+#footerspacer {
+	height: 100px; /* make sure nothing gets hidden behind the footer */
+	clear: both;
+}
+
+#footer span {
+	margin: 0 2em;
+}
+
+#footer p {
+	margin: 0;
+	padding: 0;
+	line-height: 130%;
+}
+
+/* other basic styles */
+.notice {
+	font-weight: bold;
+}
+
+.afterthought {
+	font-size: 11px;
+	font-weight: normal;
+}
+
+.instruction {
+	margin: 0 0 10px 10px;
+	font-size: 11px;
+	line-height: 11px;
+}
+
+#joined {
+	width: 140px;
+}
+
+#joined li {
+	text-align: left;
+	border: 1px solid #777;
+	margin-bottom: 2px;
+	padding: 2px 3px;
+	font-size: 12px;
+	font-weight: bold;
+	list-style: none outside none;
+}
+
+
+ul.settings li {
+	float: left;
+	width: 100%;
+}
+
+ul.settings label {
+	clear: left;
+}
+
+#buttons {
+	float: right;
+	margin-right: 1ex;
+}
+
+#buttons li {
+	float: left;
+}
+
+#buttons a {
+	display: block;
+	padding: 0 1em;
+	border: 1px solid #333;
+	border-width: 0 1px;
+	margin: 0 -1px;
+}
+
+html div#fancy_div {
+	background: #FFF;
+	color: #000;
+}
+
+.clone {
+	display: none;
+	visibility: hidden;
+}
+
+div.help ol, div.help ul {
+	text-indent: -1em;
+	margin: 0 0 1ex 2em;
+}
+
+div.help li {
+	text-indent: -1em;
+	margin-bottom: 1ex;
+}
+
+div.help li strong {
+	color: #F00;
+}
+
+div.help table {
+	width: auto;
+	margin: 0 auto;
+}
+
+table.game_info {
+	width: 300px;
+}
+
+#mygames .dead a { color: #999; }
+#mygames .placing a { color: #F00; }
+#mygames .playing a { color: #FF0; }
+#mygames .none a { color: #FFF; }
+

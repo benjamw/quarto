@@ -1,0 +1,30 @@
+
+BITS
+----------------------
+1 - shape  (square = 1)
+2 - fill   (solid  = 1)
+4 - height (tall   = 1)
+8 - color  (white  = 1)
+
+color - height - fill - shape
+
+
+PIECES
+----------------------
+	0	00	0000	black	short	hollow	round
+	1	01	0001	black	short	hollow	square
+	2	02	0010	black	short	solid	round
+	3	03	0011	black	short	solid	square
+	4	04	0100	black	tall	hollow	round
+	5	05	0101	black	tall	hollow	square
+	6	06	0110	black	tall	solid	round
+	7	07	0111	black	tall	solid	square
+
+	8	08	1000	white	short	hollow	round
+	9	09	1001	white	short	hollow	square
+	A	10	1010	white	short	solid	round
+	B	11	1011	white	short	solid	square
+	C	12	1100	white	tall	hollow	round
+	D	13	1101	white	tall	hollow	square
+	E	14	1110	white	tall	solid	round
+	F	15	1111	white	tall	solid	square

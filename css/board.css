@@ -1,0 +1,129 @@
+/*
+// $Id: board.css 11 2009-07-15 10:08:53Z cchristensen $
+*/
+
+.msg,
+.finished {
+	color: #FFF;
+	font-weight: bold;
+	font-size: 16px;
+	line-height: 24px;
+	background: #C00;
+	padding: 4px;
+	text-align: center;
+	margin-bottom: 1ex;
+}
+.won  { background: #093; }
+.lost { background: #C00; }
+
+div#board {
+	float: left;
+	margin: 10px 30px;
+	width: 345px;
+}
+
+div#board div {
+	float: left;
+	width: 75px;
+	height: 75px;
+	border: 1px solid #777;
+	margin: 1px;
+}
+
+div#board div.corner {
+	border: 0;
+	width: 25px;
+	height: 25px;
+	margin: 2px;
+}
+
+div#board div.top {
+	border: 0;
+	height: 25px;
+	line-height: 25px;
+	margin: 2px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+div#board div.side {
+	border: 0;
+	width: 25px;
+	line-height: 75px;
+	margin: 2px;
+	text-align: center;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+div#board div.prevmove {
+	border: 2px solid #000;
+	margin: 0px;
+	position: relative;
+	z-index: 2;
+}
+
+div#board div.curmove {
+	border: 2px solid #000;
+	margin: 0px;
+	position: relative;
+	z-index: 4;
+}
+
+div#next,
+div#outcome {
+	float: left;
+	width: 100px;
+	height: 316px;
+	margin: 10px 30px;
+	padding-top: 100px'
+}
+
+div#pieces {
+	margin-left: 30px;
+	clear: both;
+}
+div#pieces:after {
+    content: '.';
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+div#pieces div {
+	float: left;
+	width: 75px;
+	height: 75px;
+	margin: 1px;
+}
+
+.clr {
+	clear: both;
+}
+
+#game div {
+	clear: both;
+	margin: 30px;
+	text-align: center;
+}
+
+h2 span {
+	margin: 0 3em;
+}
+
+#chats {
+	margin: 10px 30px;
+	height: auto;
+}
+
+#chats .black {
+	color: #DDD;
+	background-color: #333;
+}
+
+#chats .private {
+	background-color: #BBF;
+	color: #000;
+}

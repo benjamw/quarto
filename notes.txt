@@ -1,0 +1,3 @@
+window.location = 'URL'; // for redirecting and keeping the back button functionality
+
+window.location.replace('URL'); // for redirecting and deleting the previous back button (like for failed logins)
