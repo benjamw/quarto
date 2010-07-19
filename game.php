@@ -62,12 +62,13 @@ if (is_array($chat_data)) {
 		}
 
 		// preserve spaces in the chat text
+		$chat['message'] = htmlentities($chat['message'], ENT_QUOTES, 'ISO-8859-1', false);
 		$chat['message'] = str_replace("\t", '    ', $chat['message']);
 		$chat['message'] = str_replace('  ', ' &nbsp;', $chat['message']);
 
 		$chat_html .= '
 				<dt class="'.$players[$chat['player_id']]['color'].'"><span>'.$chat['create_date'].'</span> '.$chat['username'].'</dt>
-				<dd'.($chat['private'] ? ' class="private"' : '').'>'.htmlentities($chat['message'], ENT_QUOTES, 'ISO-8859-1', false).'</dd>';
+				<dd'.($chat['private'] ? ' class="private"' : '').'>'.$chat['message'].'</dd>';
 	}
 
 	$chat_html .= '
