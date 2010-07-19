@@ -412,6 +412,7 @@ class Game
 
 		try {
 			$this->_quarto->set_next_piece($piece);
+			Email::send('turn', $this->_players['opponent']['player_id'], array('player' => $this->_players['player']['object']->username));
 		}
 		catch (MyException $e) {
 			throw $e;
@@ -436,6 +437,7 @@ class Game
 				$this->state = 'Finished';
 
 				if (isset($outcome[0]) && ('DRAW' == $outcome[0])) {
+					$this->state = 'Draw';
 					$this->_players['player']['object']->add_draw( );
 					$this->_players['opponent']['object']->add_draw( );
 					Email::send('draw', $this->_players['opponent']['player_id'], array('player' => $this->_players['player']['object']->username));
@@ -445,9 +447,6 @@ class Game
 					$this->_players['opponent']['object']->add_loss( );
 					Email::send('defeated', $this->_players['opponent']['player_id'], array('player' => $this->_players['player']['object']->username));
 				}
-			}
-			else {
-				Email::send('turn', $this->_players['opponent']['player_id'], array('player' => $this->_players['player']['object']->username));
 			}
 		}
 		catch (MyException $e) {
