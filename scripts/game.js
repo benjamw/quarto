@@ -31,7 +31,7 @@ $(document).ready( function( ) {
 						alert(reply.error);
 					}
 
-					if ((reply.error || reply.reload) && reload) { window.location.reload( ); }
+					if ((reply.error || ('RELOAD' == reply.action)) && reload) { window.location.reload( ); }
 					return;
 				}
 			});

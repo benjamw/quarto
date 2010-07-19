@@ -452,6 +452,8 @@ class Game
 		catch (MyException $e) {
 			throw $e;
 		}
+
+		return $outcome;
 	}
 
 
@@ -796,10 +798,6 @@ class Game
 			$this->_history = $result;
 			$this->last_move = strtotime($result[0]['move_date']);
 
-			if ( ! is_null($result[0]['next_piece'])) {
-				$this->_quarto->next_piece = $result[0]['next_piece'];
-			}
-
 			$this->turn = 'white';
 			if (0 != (count($result) % 2)) {
 				$this->turn = 'black';
@@ -810,6 +808,10 @@ class Game
 			}
 			catch (MyException $e) {
 				throw $e;
+			}
+
+			if ( ! is_null($result[0]['next_piece'])) {
+				$this->_quarto->next_piece = $result[0]['next_piece'];
 			}
 		}
 		else {
