@@ -4,6 +4,10 @@ TODO
 - port ajax_helper to ajax functions and only have logic switches
 	in ajax_helper file
 
+- add review buttons to FFW and REV the game, even finished games
+
+- store finished games
+
 - don't show success messages if email is not sent
 
 - preserve spaces in chats (copy code from messages) (port to WR)

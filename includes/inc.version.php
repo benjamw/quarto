@@ -1,6 +1,6 @@
 <?php
 
-$svn_info = '$Id: inc.version.php 7 2009-07-10 11:11:29Z cchristensen $';
+$svn_info = '$Id: inc.version.php 4 2010-07-16 11:11:29Z benjam $';
 
 preg_match('/\$\w+: [-_\w\d.]+ (\d+) (\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}).*\$/', $svn_info, $matches);
 
