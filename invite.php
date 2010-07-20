@@ -8,12 +8,17 @@ require_once 'includes/inc.global.php';
 // but I'm running it here to prevent long load
 // times on other pages where it would be ran more often
 GamePlayer::delete_inactive(Settings::read('expire_users'));
-Game::delete_finished(Settings::read('expire_finished_games'));
 Game::delete_inactive(Settings::read('expire_games'));
+Game::delete_finished(Settings::read('expire_finished_games'));
 
 $Game = new Game( );
 
 if (isset($_POST['invite'])) {
+	// make sure this user is not full
+	if ($GLOBALS['Player']->max_games && ($GLOBALS['Player']->max_games <= $GLOBALS['Player']->current_games)) {
+		Flash::store('You have reached your maximum allowed games !');
+	}
+
 	test_token( );
 
 	try {
@@ -80,9 +85,14 @@ $hints = array(
 	'<span class="highlight">WARNING!</span><br />Games will be deleted after '.Settings::read('expire_games').' days of inactivity.' ,
 );
 
-$contents = '';
+// make sure this user is not full
+$submit_button = '<div><input type="submit" name="invite" value="Send Invitation" /></div>';
+$warning = '';
+if ($GLOBALS['Player']->max_games && ($GLOBALS['Player']->max_games <= $GLOBALS['Player']->current_games)) {
+	$submit_button = $warning = '<p class="warning">You have reached your maximum allowed games, you can not create this game !</p>';
+}
 
-$contents .= <<< EOF
+$contents = <<< EOF
 	<form method="post" action="{$_SERVER['REQUEST_URI']}"><div class="formdiv">
 		<input type="hidden" name="token" value="{$_SESSION['token']}" />
 		<input type="hidden" name="player_id" value="{$_SESSION['player_id']}" />
@@ -92,11 +102,14 @@ $contents .= <<< EOF
 			{$pieces_html}
 		</div>
 
-		<ul>
-			<li><label for="opponent">Opponent</label><select id="opponent" name="opponent">{$opponent_selection}</select></li>
-			<li><label for="piece">Piece</label><select id="piece" name="piece">{$piece_selection}</select></li>
-			<li><input type="submit" name="invite" value="Send Invitation" /></li>
-		</ul>
+		<div>
+			{$warning}
+
+			<div><label for="opponent">Opponent</label><select id="opponent" name="opponent">{$opponent_selection}</select></div>
+			<div><label for="piece">Piece</label><select id="piece" name="piece">{$piece_selection}</select></div>
+
+			{$submit_button}
+		</div>
 
 	</div></form>
 EOF;
