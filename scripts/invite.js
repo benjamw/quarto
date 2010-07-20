@@ -5,7 +5,7 @@ var reload = true; // do not change this
 
 $(document).ready( function( ) {
 	// make the piece clicks work
-	$('div#pieces img').click( function( ) {
+	$('div#piece_selection img').click( function( ) {
 		choose_piece($(this).attr('id').slice(2).toUpperCase( ));
 	}).css('cursor', 'pointer');
 

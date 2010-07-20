@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS `qu_game` (
   `game_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `white_id` int(10) unsigned DEFAULT NULL,
   `black_id` int(10) unsigned DEFAULT NULL,
+  `extra_info` text DEFAULT NULL,
   `state` enum('Waiting','Playing','Finished','Draw') COLLATE latin1_general_ci NOT NULL DEFAULT 'Waiting',
   `paused` tinyint(1) NOT NULL DEFAULT '0',
   `create_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',

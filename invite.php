@@ -47,11 +47,11 @@ foreach ($pieces as $piece) {
 $meta['title'] = 'Send Game Invitation';
 $meta['head_data'] = '
 	<style type="text/css">
-		div#pieces {
+		div#piece_selection {
 			width: 620px;
 			float: right;
 		}
-		div#pieces:after {
+		div#piece_selection:after {
 		    content: ".";
 		    display: block;
 		    height: 0;
@@ -66,11 +66,12 @@ $meta['head_data'] = '
 		    visibility: hidden;
 		}
 
-		#pieces img {
+		#piece_selection img {
 			float: left;
 		}
 	</style>
 	<script type="text/javascript" src="scripts/invite.js"></script>
+	<link rel="stylesheet" type="text/css" media="screen" href="css/board.css" />
 ';
 
 $hints = array(
@@ -86,7 +87,7 @@ $contents .= <<< EOF
 		<input type="hidden" name="token" value="{$_SESSION['token']}" />
 		<input type="hidden" name="player_id" value="{$_SESSION['player_id']}" />
 
-		<div id="pieces">
+		<div id="piece_selection">
 			<p>Select Initial Piece:</p>
 			{$pieces_html}
 		</div>

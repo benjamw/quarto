@@ -71,6 +71,11 @@ div#board div.curmove {
 	z-index: 4;
 }
 
+div#board div.highlighted {
+	border: 2px solid #C00;
+	margin: 0px;
+}
+
 div#next,
 div#outcome {
 	float: left;

@@ -41,12 +41,42 @@ class Quarto
 	 */
 	protected $board;
 
+
 	/** protected property next_piece
 	 *		Holds the next piece to be played
 	 *
 	 * @var string
 	 */
 	protected $next_piece;
+
+
+	/** protected property small_square_matches
+	 *		Holds the flag showing whether or not
+	 *		small square matching is allowed
+	 *
+	 * @var bool
+	 */
+	protected $small_square_matches = false;
+
+
+	/** protected property small_square_torus
+	 *		Holds the flag showing whether or not
+	 *		small square matching is allowed on edges
+	 *		and wrapping the board
+	 *
+	 * @var bool
+	 */
+	protected $small_square_torus = false;
+
+
+	/** protected property diagonal_torus
+	 *		Holds the flag showing whether or not
+	 *		diagonal matching is allowed on edges
+	 *		and wrapping the board
+	 *
+	 * @var bool
+	 */
+	protected $diagonal_torus = false;
 
 
 	/** protected property target_human
@@ -451,13 +481,10 @@ class Quarto
 		for ($i = 0; $i < 2; ++$i) {
 			for ($j = 0; $j < 4; ++$j) {
 				for ($k = 0; $k < 4; ++$k) {
-
-// TODO: bypassed until I get options built ---
-					if (0 < $j) {
+					if ( ! $this->diagonal_torus && (0 < $j)) {
 						$and = $not = false;
 						continue;
 					}
-// END TODO
 
 					$x = $k + $j;
 					$y = $k;
@@ -506,9 +533,8 @@ class Quarto
 			}
 		}
 
-/* TODO: commented out until I get options built ---
-		if (__SMALL_SQUARES__) {
-			// search small squares
+		// search small squares
+		if ($this->small_square_matches) {
 			for ($i = 0; $i < 16; ++$i) {
 				for ($j = 0; $j < 4; ++$j) {
 					$x = $j % 2; // vert addition
@@ -516,8 +542,7 @@ class Quarto
 
 					// fix for edges
 					if (3 == ($i % 4)) { // right edge
-						// TODO
-						if (__NO_EDGES__) {
+						if ($this->small_square_torus) {
 							$and = $not = false;
 							break;
 						}
@@ -526,8 +551,7 @@ class Quarto
 					}
 
 					if (12 <= $i) { // bottom edge
-						// TODO
-						if (__NO_EDGES__) {
+						if ($this->small_square_torus) {
 							$and = $not = false;
 							break;
 						}
@@ -535,8 +559,7 @@ class Quarto
 						$y *= -3; // adjust horz
 					}
 
-					// TODO
-					if (__NO_CORNERS__ && (3 == ($i % 4)) && (12 <= $i)) {
+					if ($this->small_square_torus && (3 == ($i % 4)) && (12 <= $i)) {
 						$and = $not = false;
 						break;
 					}
@@ -569,7 +592,6 @@ class Quarto
 				}
 			}
 		}
---- */
 
 		// check if the game is over due to draw
 		if ( ! $return && (false === strpos($this->board, '.'))) {

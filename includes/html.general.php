@@ -165,6 +165,18 @@ function get_header($meta = null) {
 	<script type="text/javascript" src="scripts/jquery.tablesorter.js"></script>
 	<!-- <script type="text/javascript" src="scripts/jquery.color.js"></script> -->
 
+	<!-- fancybox -->
+	<link rel="stylesheet" type="text/css" media="screen" href="scripts/jquery.fancybox/jquery.fancybox-1.3.1.css" />
+	<script type="text/javascript" src="scripts/jquery.fancybox/jquery.fancybox-1.3.1.pack.js"></script>
+	<script type="text/javascript">//<![CDATA[
+		$(document).ready( function( ) {
+			$('a.help').fancybox({
+				autoDimensions : false,
+				width: 500
+			});
+		});
+	/*]]>*/</script>
+
 	{$head_data}
 	{$flash}
 	{$admin_css}

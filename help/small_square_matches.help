@@ -1,0 +1,48 @@
+<div class="help">
+
+	<h3>Small Square Matching</h3>
+
+	<p>Small square matching means that any matching pieces within a 2&times;2 square will count as a win.</p>
+
+	<p>There are 9 possible areas that can be matched with this method and matches with this method are denoted by the upper-left square of the matching group.</p>
+
+	<p>(The section highlighted in red is a winning match and denoted by "Square A2: Shape")</p>
+
+	<div id="board">
+		<div class="corner"></div>
+
+		<div class="top">A</div>
+		<div class="top">B</div>
+		<div class="top">C</div>
+		<div class="top">D</div>
+
+		<div class="side">1</div>
+
+		<div id="sq_0"></div>
+		<div id="sq_1"></div>
+		<div id="sq_2"><img id="p_5" src="images/black-tall-hollow-square.png" alt="black tall hollow square" class="piece black tall hollow square" /></div>
+		<div id="sq_3"></div>
+
+		<div class="side">2</div>
+
+		<div id="sq_4" class="highlighted"><img id="p_C" src="images/white-tall-hollow-round.png" alt="white tall hollow round" class="piece white tall hollow round"></div>
+		<div id="sq_5" class="highlighted"><img id="p_A" src="images/white-short-solid-round.png" alt="white short solid round" class="piece white short solid round" /></div>
+		<div id="sq_6"><img id="p_7" src="images/black-tall-solid-square.png" alt="black tall solid square" class="piece black tall solid square" /></div>
+		<div id="sq_7"></div>
+
+		<div class="side">3</div>
+
+		<div id="sq_8" class="highlighted"><img class="piece black tall hollow round" alt="black tall hollow round" src="images/black-tall-hollow-round.png" id="p_4" style="cursor: pointer;"></div>
+		<div id="sq_9" class="highlighted"><img id="p_E" src="images/white-tall-solid-round.png" alt="white tall solid round" class="piece white tall solid round" /></div>
+		<div id="sq_10"><img id="p_0" src="images/black-short-hollow-round.png" alt="black short hollow round" class="piece black short hollow round" /></div>
+		<div id="sq_11"></div>
+
+		<div class="side">4</div>
+
+		<div id="sq_12"></div>
+		<div id="sq_13"></div>
+		<div id="sq_14"></div>
+		<div id="sq_15"><img class="piece white short hollow square" alt="white short hollow square" src="images/white-short-hollow-square.png" id="p_9" style="cursor: pointer;"></div>
+	</div>
+
+</div>

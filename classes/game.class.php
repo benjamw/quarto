@@ -26,6 +26,8 @@
 
 // TODO: comments & organize better
 
+require_once INCLUDE_DIR.'func.array.php';
+
 class Game
 {
 
@@ -55,6 +57,18 @@ class Game
 	 * @var string
 	 */
 	const GAME_NUDGE_TABLE = T_GAME_NUDGE;
+
+
+	/** static protected property _EXTRA_INFO_DEFAULTS
+	 *		Holds the default extra info data
+	 *
+	 * @var array
+	 */
+	static protected $_EXTRA_INFO_DEFAULTS = array(
+			'small_square_matches' => false,
+			'small_square_torus' => false,
+			'diagonal_torus' => false,
+		);
 
 
 	/** public property id
@@ -113,6 +127,14 @@ class Game
 	 * @var int (unix timestamp)
 	 */
 	public $last_move;
+
+
+	/** protected property _extra_info
+	 *		Holds the extra game info
+	 *
+	 * @var array
+	 */
+	protected $_extra_info;
 
 
 	/** protected property _players
@@ -327,11 +349,31 @@ class Game
 		// translate (filter/sanitize) the data
 		$_P['white_id'] = $_P['player_id'];
 		$_P['black_id'] = $_P['opponent'];
+		$_P['small_square_matches'] = (isset($_P['small_square_matches']) && ('yes' == $_P['small_square_matches']));
+		$_P['small_square_torus'] = (isset($_P['small_square_torus']) && ('yes' == $_P['small_square_torus']));
+		$_P['diagonal_torus'] = (isset($_P['diagonal_torus']) && ('yes' == $_P['diagonal_torus']));
+
+		$extra_info = array(
+			'small_square_matches' => (bool) $_P['small_square_matches'],
+			'small_square_torus' => (bool) $_P['small_square_torus'],
+			'diagonal_torus' => (bool) $_P['diagonal_torus'],
+		);
+		call($extra_info);
+
+		$diff = array_compare($extra_info, self::$_EXTRA_INFO_DEFAULTS);
+		$extra_info = $diff[0];
+		ksort($extra_info);
+
+		call($extra_info);
+		if ( ! empty($extra_info)) {
+			$_P['extra_info'] = serialize($extra_info);
+		}
 
 		// create the game
 		$required = array(
 			'white_id' ,
 			'black_id' ,
+			'extra_info' ,
 		);
 
 		$key_list = $required;
@@ -755,6 +797,12 @@ class Game
 		$this->create_date = strtotime($result['create_date']);
 		$this->modify_date = strtotime($result['modify_date']);
 
+		$this->_extra_info = array_merge_plus(self::$_EXTRA_INFO_DEFAULTS, unserialize($result['extra_info']));
+
+		$this->_quarto->small_square_matches = $this->_extra_info['small_square_matches'];
+		$this->_quarto->small_square_torus = $this->_extra_info['small_square_matches'] && $this->_extra_info['small_square_torus'];
+		$this->_quarto->diagonal_torus = $this->_extra_info['diagonal_torus'];
+
 		// set up the players
 		$this->_players['white']['player_id'] = $result['white_id'];
 		$this->_players['white']['object'] = new GamePlayer($result['white_id']);
@@ -784,7 +832,7 @@ class Game
 			$this->_players['opponent']['opp_color'] = 'white';
 		}
 
-		// set up the boards
+		// set up the board
 		$query = "
 			SELECT *
 			FROM ".self::GAME_BOARD_TABLE."
@@ -844,7 +892,8 @@ class Game
 
 			// update the game data
 			$query = "
-				SELECT state
+				SELECT extra_info
+					, state
 					, modify_date
 				FROM ".self::GAME_TABLE."
 				WHERE game_id = '{$this->id}'
@@ -881,6 +930,20 @@ class Game
 		call($this->state);
 		if ($game['state'] != $this->state) {
 			$update_game['state'] = $this->state;
+		}
+
+		$diff = array_compare($this->_extra_info, self::$_EXTRA_INFO_DEFAULTS);
+		$update_game['extra_info'] = $diff[0];
+		ksort($update_game['extra_info']);
+
+		$update_game['extra_info'] = serialize($update_game['extra_info']);
+
+		if ('a:0:{}' == $update_game['extra_info']) {
+			$update_game['extra_info'] = null;
+		}
+
+		if (0 === strcmp($game['extra_info'], $update_game['extra_info'])) {
+			unset($update_game['extra_info']);
 		}
 
 		if ($update_game) {
@@ -1271,6 +1334,7 @@ CREATE TABLE IF NOT EXISTS `qu_game` (
   `game_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `white_id` int(10) unsigned DEFAULT NULL,
   `black_id` int(10) unsigned DEFAULT NULL,
+  `extra_info` text DEFAULT NULL,
   `state` enum('Waiting', 'Playing', 'Finished', 'Draw') COLLATE latin1_general_ci NOT NULL DEFAULT 'Waiting',
   `paused` tinyint(1) NOT NULL DEFAULT '0',
   `create_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
