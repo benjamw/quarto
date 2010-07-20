@@ -108,6 +108,13 @@ $contents = <<< EOF
 			<div><label for="opponent">Opponent</label><select id="opponent" name="opponent">{$opponent_selection}</select></div>
 			<div><label for="piece">Piece</label><select id="piece" name="piece">{$piece_selection}</select></div>
 
+			<fieldset>
+				<legend>Matching Options</legend>
+				<div><label class="inline"><input type="checkbox" name="small_square_matches" value="yes" /> Small Square Matching</label> <a href="help/small_square_matches.help" class="help">?</a></div>
+				<div><label class="inline"><input type="checkbox" name="small_square_torus" value="yes" /> Small Square Torus (Wrapping)</label> <a href="help/small_square_torus.help" class="help">?</a></div>
+				<div><label class="inline"><input type="checkbox" name="diagonal_torus" value="yes" /> Diagonal Torus (Wrapping)</label> <a href="help/diagonal_torus.help" class="help">?</a></div>
+			</fieldset>
+
 			{$submit_button}
 		</div>
 
