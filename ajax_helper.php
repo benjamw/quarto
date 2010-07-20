@@ -168,7 +168,7 @@ if (isset($_POST['move'])) {
 		$old_board = $Game->board;
 		$outcome = $Game->do_move($_POST['move']);
 
-		if ( ! $outcome && ! empty($_POST['piece'])) {
+		if ( ! $outcome && ('' != $_POST['piece'])) {
 			$Game->choose_piece($_POST['piece']);
 			$return['action'] = 'RELOAD';
 		}
