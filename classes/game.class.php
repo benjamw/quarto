@@ -516,7 +516,7 @@ class Game
 		}
 		else {
 			if ( ! $this->is_player($_SESSION['player_id'])) {
-				$return = array($winner.' Wins', $outcome);
+				$return = array($this->_players[$this->_players[$this->turn]['opp_color']]['object']->username.' Wins', 'won', $outcome);
 			}
 			elseif ($_SESSION['player_id'] == $this->_players[$this->turn]['player_id']) {
 				$return = array('You Lost', 'lost', $outcome);
