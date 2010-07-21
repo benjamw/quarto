@@ -377,7 +377,6 @@ class GamePlayer
 		// update the player data
 		$query = "
 			SELECT allow_email
-				, pre_hide_board
 				, max_games
 				, color
 			FROM ".self::EXTEND_TABLE."
