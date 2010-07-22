@@ -399,7 +399,7 @@ class Game
 
 		$this->id = $insert_id;
 
-		Email::send('invite', $_P['black_id'], array('name' => $GLOBALS['_PLAYERS'][$_P['white_id']]));
+		Email::send('invite', $_P['black_id'], array('player' => $GLOBALS['_PLAYERS'][$_P['white_id']]));
 
 		// set the modified date
 		$this->_mysql->insert(self::GAME_TABLE, array('modify_date' => NULL), " WHERE game_id = '{$this->id}' ");
