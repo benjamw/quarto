@@ -373,10 +373,11 @@ class Game
 		$required = array(
 			'white_id' ,
 			'black_id' ,
-			'extra_info' ,
 		);
 
-		$key_list = $required;
+		$key_list = array_merge($required, array(
+			'extra_info' ,
+		));
 
 		try {
 			$_DATA = array_clean($_P, $key_list, $required);
