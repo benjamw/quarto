@@ -100,6 +100,11 @@ elseif ('Finished' == $Game->state) {
 
 $info_bar = '<span class="turn">'.$turn.'</span>';
 
+$matching_methods = $Game->get_matching_methods( );
+if ($matching_methods) {
+	$info_bar .= ' <span class="matches">'.implode(' | ', $matching_methods).'</span>';
+}
+
 $meta['title'] = $turn.' - '.$Game->name.' (#'.$_SESSION['game_id'].')';
 $meta['show_menu'] = false;
 $meta['head_data'] = '

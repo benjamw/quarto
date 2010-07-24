@@ -745,6 +745,32 @@ class Game
 	}
 
 
+	/** public function get_matching_methods
+	 *		Returns the extra methods available to match
+	 *
+	 * @param void
+	 * @return array matching methods
+	 */
+	public function get_matching_methods( )
+	{
+		$return = array( );
+
+		if ($this->_quarto->small_square_matches) {
+			$return[] = 'Small Square';
+		}
+
+		if ($this->_quarto->small_square_torus) {
+			$return[] = 'Small Square Torus';
+		}
+
+		if ($this->_quarto->diagonal_torus) {
+			$return[] = 'Diagonal Torus';
+		}
+
+		return $return;
+	}
+
+
 	/** public function write_game_file
 	 *		TODO
 	 *

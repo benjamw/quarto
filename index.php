@@ -31,7 +31,6 @@ $table_format = array(
 	array('State', '###(([[[paused]]]) ? \'Paused\' : (([[[my_turn]]]) ? \'<span class="highlight">[[[state]]]</span>\' : \'[[[state]]]\'))') ,
 	array('Player #1', '###((\'[[[white]]]\' == $GLOBALS[\'Player\']->username) ? \'<span class="highlight">[[[white]]]</span>\' : \'[[[white]]]\')') ,
 	array('Player #2', '###((\'[[[black]]]\' == $GLOBALS[\'Player\']->username) ? \'<span class="highlight">[[[black]]]</span>\' : \'[[[black]]]\')') ,
-	array('Method', 'method') ,
 	array('Last Move', '###date(Settings::read(\'long_date\'), strtotime(\'[[[last_move]]]\'))', null, ' class="date"') ,
 );
 $contents .= '
