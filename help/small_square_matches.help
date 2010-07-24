@@ -6,7 +6,7 @@
 
 	<p>There are 9 possible areas that can be matched with this method and matches with this method are denoted by the upper-left square of the matching group.</p>
 
-	<p>(The section highlighted in red is a winning match and denoted by "Square A2: Shape")</p>
+	<p>(The section shown in blue is denoted by "Square C1", and the section in orange denoted by "Square A2")</p>
 
 	<div id="board">
 		<div class="corner"></div>
@@ -20,21 +20,21 @@
 
 		<div id="sq_0"></div>
 		<div id="sq_1"></div>
-		<div id="sq_2"><img id="p_5" src="images/black-tall-hollow-square.png" alt="black tall hollow square" class="piece black tall hollow square" /></div>
-		<div id="sq_3"></div>
+		<div id="sq_2"><img class="piece black short hollow round" alt="black short hollow round" src="images/black-short-hollow-round.png" id="p_0"></div>
+		<div id="sq_3"><img class="piece black tall hollow round" alt="black tall hollow round" src="images/black-tall-hollow-round.png" id="p_4"></div>
 
 		<div class="side">2</div>
 
-		<div id="sq_4" class="highlighted"><img id="p_C" src="images/white-tall-hollow-round.png" alt="white tall hollow round" class="piece white tall hollow round"></div>
-		<div id="sq_5" class="highlighted"><img id="p_A" src="images/white-short-solid-round.png" alt="white short solid round" class="piece white short solid round" /></div>
-		<div id="sq_6"><img id="p_7" src="images/black-tall-solid-square.png" alt="black tall solid square" class="piece black tall solid square" /></div>
-		<div id="sq_7"></div>
+		<div id="sq_4"><img class="piece white tall solid round" alt="white tall solid round" src="images/white-tall-solid-round.png" id="p_E"></div>
+		<div id="sq_5"><img class="piece white short solid round" alt="white short solid round" src="images/white-short-solid-round.png" id="p_A"></div>
+		<div id="sq_6"><img class="piece black short hollow square" alt="black short hollow square" src="images/black-short-hollow-square.png" id="p_1"></div>
+		<div id="sq_7"><img class="piece black tall hollow square" alt="black tall hollow square" src="images/black-tall-hollow-square.png" id="p_5"></div>
 
 		<div class="side">3</div>
 
-		<div id="sq_8" class="highlighted"><img class="piece black tall hollow round" alt="black tall hollow round" src="images/black-tall-hollow-round.png" id="p_4" style="cursor: pointer;"></div>
-		<div id="sq_9" class="highlighted"><img id="p_E" src="images/white-tall-solid-round.png" alt="white tall solid round" class="piece white tall solid round" /></div>
-		<div id="sq_10"><img id="p_0" src="images/black-short-hollow-round.png" alt="black short hollow round" class="piece black short hollow round" /></div>
+		<div id="sq_8"><img class="piece white tall solid square" alt="white tall solid square" src="images/white-tall-solid-square.png" id="p_F"></div>
+		<div id="sq_9"><img class="piece white short solid square" alt="white short solid square" src="images/white-short-solid-square.png" id="p_B"></div>
+		<div id="sq_10"></div>
 		<div id="sq_11"></div>
 
 		<div class="side">4</div>
@@ -42,7 +42,7 @@
 		<div id="sq_12"></div>
 		<div id="sq_13"></div>
 		<div id="sq_14"></div>
-		<div id="sq_15"><img class="piece white short hollow square" alt="white short hollow square" src="images/white-short-hollow-square.png" id="p_9" style="cursor: pointer;"></div>
+		<div id="sq_15"></div>
 	</div>
 
 </div>

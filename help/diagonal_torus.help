@@ -1,0 +1,48 @@
+<div class="help">
+
+	<h3>Diagonal Torus</h3>
+
+	<p>Diagonal Torus means that matching pieces within a diagonal that wraps around an edge will count as a win.</p>
+
+	<p>There are 6 possible lines in addition to the 2 via normal diagonal matching that can be matched with this method and matches with this method are denoted by the direction and column number of the matching group.</p>
+
+	<p>(The blue set is denoted by "Diag&nbsp;\4", the orange set by "Diag&nbsp;\2", the square set by "Diag&nbsp;/2", and the round set (which is a normal diagonal) by "Diag&nbsp;/4")</p>
+
+	<div id="board">
+		<div class="corner"></div>
+
+		<div class="top">A</div>
+		<div class="top">B</div>
+		<div class="top">C</div>
+		<div class="top">D</div>
+
+		<div class="side">1</div>
+
+		<div id="sq_0"></div>
+		<div id="sq_1"><img class="piece white short solid square" alt="white short solid square" src="images/white-short-solid-square.png" id="p_B"></div>
+		<div id="sq_2"></div>
+		<div id="sq_3"><img class="piece black short hollow round" alt="black short hollow round" src="images/black-short-hollow-round.png" id="p_0"></div>
+
+		<div class="side">2</div>
+
+		<div id="sq_4"><img class="piece black short hollow square" alt="black short hollow square" src="images/black-short-hollow-square.png" id="p_1"></div>
+		<div id="sq_5"></div>
+		<div id="sq_6"><img class="piece white short solid round" alt="white short solid round" src="images/white-short-solid-round.png" id="p_A"></div>
+		<div id="sq_7"></div>
+
+		<div class="side">3</div>
+
+		<div id="sq_8"></div>
+		<div id="sq_9"><img class="piece black short solid round" alt="black short solid round" src="images/black-short-solid-round.png" id="p_2"></div>
+		<div id="sq_10"></div>
+		<div id="sq_11"><img class="piece white short hollow square" alt="white short hollow square" src="images/white-short-hollow-square.png" id="p_9"></div>
+
+		<div class="side">4</div>
+
+		<div id="sq_12"><img class="piece white short hollow round" alt="white short hollow round" src="images/white-short-hollow-round.png" id="p_8"></div>
+		<div id="sq_13"></div>
+		<div id="sq_14"><img class="piece black short solid square" alt="black short solid square" src="images/black-short-solid-square.png" id="p_3"></div>
+		<div id="sq_15"></div>
+	</div>
+
+</div>
