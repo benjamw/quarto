@@ -573,8 +573,7 @@ table.game_info {
 	width: 300px;
 }
 
-#mygames .dead a { color: #999; }
-#mygames .placing a { color: #F00; }
-#mygames .playing a { color: #FF0; }
+#mygames .finished a { color: #999; }
+#mygames .playing a { color: #F00; }
 #mygames .none a { color: #FFF; }
 

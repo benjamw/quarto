@@ -172,7 +172,8 @@ function get_header($meta = null) {
 		$(document).ready( function( ) {
 			$('a.help').fancybox({
 				autoDimensions : false,
-				width: 500
+				width: 500,
+				height: 400
 			});
 		});
 	/*]]>*/</script>
