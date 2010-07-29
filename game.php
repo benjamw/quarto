@@ -161,7 +161,7 @@ echo get_header($meta);
 					}
 				?>
 
-			</div>
+			</div> <!-- #board -->
 
 		<?php if ('Playing' == $Game->state) { ?>
 

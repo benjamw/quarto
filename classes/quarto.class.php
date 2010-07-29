@@ -528,7 +528,7 @@ class Quarto
 						$l = 3 - $j;
 					}
 
-					$return[$diags[$i].($l + 1)] = $and | $not;
+					$return[$diags[$i].' '.chr(65 + $l)] = $and | $not;
 				}
 			}
 		}

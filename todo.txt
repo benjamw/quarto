@@ -1,6 +1,9 @@
 TODO
 ------------------
 
+- only one message allowed between refreshes for chats... needs to
+	be fixed
+
 - port ajax_helper to ajax functions and only have logic switches
 	in ajax_helper file
 
