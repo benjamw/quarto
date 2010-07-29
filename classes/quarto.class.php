@@ -542,7 +542,7 @@ class Quarto
 
 					// fix for edges
 					if (3 == ($i % 4)) { // right edge
-						if ($this->small_square_torus) {
+						if ( ! $this->small_square_torus) {
 							$and = $not = false;
 							break;
 						}
@@ -551,7 +551,7 @@ class Quarto
 					}
 
 					if (12 <= $i) { // bottom edge
-						if ($this->small_square_torus) {
+						if ( ! $this->small_square_torus) {
 							$and = $not = false;
 							break;
 						}
@@ -559,7 +559,7 @@ class Quarto
 						$y *= -3; // adjust horz
 					}
 
-					if ($this->small_square_torus && (3 == ($i % 4)) && (12 <= $i)) {
+					if ( ! $this->small_square_torus && (3 == ($i % 4)) && (12 <= $i)) {
 						$and = $not = false;
 						break;
 					}
@@ -666,8 +666,8 @@ class Quarto
 
 		$cols = array('A','B','C','D');
 
-		$target = $cols[floor($index / 4)];
-		$target .= ($index % 4) + 1;
+		$target = $cols[($index % 4)];
+		$target .= floor($index / 4) + 1;
 
 		return $target;
 	}
