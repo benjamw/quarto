@@ -21,7 +21,7 @@ $(document).ready( function( ) {
 
 	// chat box functions
 	$('#chatbox form').submit( function( ) {
-		if ('' == $.trim($('#chatbox input').val( ))) {
+		if ('' == $.trim($('#chatbox input#chat').val( ))) {
 			return false;
 		}
 
@@ -44,7 +44,7 @@ $(document).ready( function( ) {
 					var entry = '<dt>'+reply.username+'</dt>'+
 						'<dd>'+reply.message+'</dd>';
 					$('#chats').prepend(entry);
-					$('#chatbox input').val('');
+					$('#chatbox input#chat').val('');
 				}
 			}
 		});
