@@ -617,7 +617,55 @@ class Game
 	{
 		call(__METHOD__);
 
-		// TODO
+		if (1 >= count($this->_history)) {
+			return false;
+		}
+
+		$history = $this->_history;
+
+		for ($i = 0; $i < 16; ++$i) {
+			if ($history[1]['board'][$i] != $history[0]['board'][$i]) {
+				return $i;
+			}
+		}
+
+		return false;
+	}
+
+
+	/** public function get_history
+	 *		Grabs the game history array
+	 *
+	 * @param void
+	 * @return array game history
+	 */
+	public function get_history( )
+	{
+		call(__METHOD__);
+
+		$history = array_reverse($this->_history);
+
+		// run through the history and attach the player username to the move they made
+		foreach ($history as $i => & $item) {
+			unset($item['game_id']);
+			unset($item['move_date']);
+
+			$item['color'] = (0 == ($i % 2)) ? 'white' : 'black';
+			$item['username'] = $this->_players[$item['color']]['object']->username;
+
+			// find out which square the piece was placed on
+			if ($i) {
+				for ($j = 0; $j < 16; ++$j) {
+					if ($history[$i - 1]['board'][$j] != $item['board'][$j]) {
+						$item['index'] = $j;
+						break;
+					}
+				}
+			}
+		}
+		unset($item); // kill the reference
+
+		return $history;
 	}
 
 

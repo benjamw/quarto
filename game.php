@@ -114,6 +114,8 @@ $meta['head_data'] = '
 		var state = "'.(( ! $Game->paused) ? strtolower($Game->state) : 'paused').'";
 		var last_move = '.$Game->last_move.';
 		var my_turn = '.(( ! $Game->get_my_turn( ) || $no_turn) ? 'false' : 'true').';
+		var move_history = '.json_encode($Game->get_history( )).';
+		var current_index = move_history.length - 1;
 	//]]></script>
 	<script type="text/javascript" src="scripts/game.js"></script>
 ';
@@ -142,6 +144,7 @@ echo get_header($meta);
 
 				<?php
 					$board = $Game->board;
+					$prev_move = $Game->get_previous_move( );
 
 					// generate the board
 					for ($i = 0; $i < 16; ++$i) {
@@ -150,8 +153,13 @@ echo get_header($meta);
 							<div class="side">'.(floor($i / 4) + 1).'</div>';
 						}
 
+						$class = '';
+						if ($i == $prev_move) {
+							$class = ' class="prevmove"';
+						}
+
 						echo '
-						<div id="sq_'.$i.'">';
+						<div id="sq_'.$i.'"'.$class.'>';
 
 						if ('.' !== $board[$i]) {
 							echo get_piece_image($board[$i]);
@@ -163,70 +171,78 @@ echo get_header($meta);
 
 			</div> <!-- #board -->
 
-		<?php if ('Playing' == $Game->state) { ?>
+			<div id="info">
 
-			<div id="next">
-				<p>Next Piece:</p>
+				<div id="next">
 
-				<?php
-					if ( ! is_null($Game->next_piece)) {
-						echo get_piece_image($Game->next_piece);
-					}
-					else {
-						echo '<p><strong>ERROR</strong></p>';
-					}
-				?>
+					<?php if ('Playing' == $Game->state) { ?>
 
-			</div> <!-- #next -->
+					<p>Next Piece:</p>
 
-		<?php } elseif ('Finished' == $Game->state) { ?>
-
-			<div id="outcome">
-				<p>Outcome:</p>
-
-				<?php if ( ! isset($outcome[0]) || ('DRAW' != $outcome[0])) { ?>
-
-				<ul>
-				<?php
-					$attributes = array('Color', 'Size', 'Fill', 'Shape');
-
-					foreach ($outcome_data as $section => $matches) {
-						$match = str_pad(decbin($matches), 4, '0', STR_PAD_LEFT);
-
-						$desc = 'Col';
-						if ((string) $section === (string) (int) $section) {
-							$desc = 'Row';
+					<?php
+						if ( ! is_null($Game->next_piece)) {
+							echo get_piece_image($Game->next_piece);
 						}
-						elseif (1 < strlen($section)) {
-							$desc = 'Diag';
+						else {
+							echo '<p><strong>ERROR</strong></p>';
+						}
+					?>
 
-							if ( ! in_array($section[0], array('\\', '/'))) {
-								$desc = 'Square';
+					<?php } ?>
+
+				</div> <!-- #next -->
+
+				<div id="outcome">
+
+					<?php if ('Finished' == $Game->state) { ?>
+
+					<p>Outcome:</p>
+
+					<?php if ( ! isset($outcome[0]) || ('DRAW' != $outcome[0])) { ?>
+
+					<ul>
+					<?php
+						$attributes = array('Color', 'Size', 'Fill', 'Shape');
+
+						foreach ($outcome_data as $section => $matches) {
+							$match = str_pad(decbin($matches), 4, '0', STR_PAD_LEFT);
+
+							$desc = 'Col';
+							if ((string) $section === (string) (int) $section) {
+								$desc = 'Row';
 							}
-						}
+							elseif (1 < strlen($section)) {
+								$desc = 'Diag';
 
-						$match_array = array( );
-						for ($i = 0; $i < 4; ++$i) {
-							if ($match[$i]) {
-								$match_array[] = $attributes[$i];
+								if ( ! in_array($section[0], array('\\', '/'))) {
+									$desc = 'Square';
+								}
 							}
+
+							$match_array = array( );
+							for ($i = 0; $i < 4; ++$i) {
+								if ($match[$i]) {
+									$match_array[] = $attributes[$i];
+								}
+							}
+
+							echo '
+							<li>'.$desc.' '.$section.': '.implode(', ', $match_array).'</li>';
 						}
+					?>
+					</ul>
 
-						echo '
-						<li>'.$desc.' '.$section.': '.implode(', ', $match_array).'</li>';
-					}
-				?>
-				</ul>
+					<?php } else { ?>
 
-				<?php } else { ?>
+					<p>Draw</p>
 
-				<p>Draw</p>
+					<?php } ?>
 
-				<?php } ?>
+					<?php } ?>
 
-			</div>
+				</div> <!-- #outcome -->
 
-		<?php } ?>
+			</div> <!-- #info -->
 
 			<?php echo $chat_html; ?>
 
@@ -244,7 +260,17 @@ echo get_header($meta);
 					}
 				?>
 
-			</div>
+			</div> <!-- #pieces -->
+
+			<div id="playback">
+				<form action="" method="post"><div>
+					<input type="button" value="|&lt;&lt;" id="first" />
+					<input type="button" value="&lt;&lt;" id="prev" />
+					<input type="button" value="reset" id="reset" />
+					<input type="button" value="&gt;&gt;" id="next" />
+					<input type="button" value="&gt;&gt;|" id="last" />
+				</div></form>
+			</div> <!-- #playback -->
 
 			<form id="game" method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>"><div class="formDiv">
 				<input type="hidden" name="token" value="<?php echo $_SESSION['token']; ?>" />
