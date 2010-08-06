@@ -30,14 +30,27 @@ if (isset($_POST['invite'])) {
 	}
 }
 
-$players = GamePlayer::get_list(true);
-$opponent_selection = '';
-foreach ($players as $player) {
+// grab the full list of players
+$players_full = GamePlayer::get_list(true);
+$invite_players = array_shrink($players_full, 'player_id');
+
+// grab the players who's max game count has been reached
+$players_maxed = GamePlayer::get_maxed( );
+$players_maxed[] = $_SESSION['player_id'];
+
+// remove the maxed players from the invite list
+$players = array_diff($invite_players, $players_maxed);
+
+$opponent_selection = '<option value="">-- Open --</option>';
+foreach ($players_full as $player) {
 	if ($_SESSION['player_id'] == $player['player_id']) {
 		continue;
 	}
 
-	$opponent_selection .= '<option value="'.$player['player_id'].'">'.$player['username'].'</option>';
+	if (in_array($player['player_id'], $players)) {
+		$opponent_selection .= '
+			<option value="'.$player['player_id'].'">'.$player['username'].'</option>';
+	}
 }
 
 $pieces = $Game->get_available_pieces( );
