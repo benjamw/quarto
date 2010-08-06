@@ -234,7 +234,7 @@ EOF;
 			foreach ($game_data as $game) {
 				$class = ($game['my_turn']) ? 'playing' : 'waiting';
 				$html .= '
-				<li class="'.$class.'"><a href="game.php?id='.$game['game_id'].$GLOBALS['_&_DEBUG_QUERY'].'">'.$game['opponent'].'</a></li>';
+				<li class="'.$class.'"><a href="game.php?id='.$game['game_id'].$GLOBALS['_&_DEBUG_QUERY'].'">'.htmlentities($game['opponent'], ENT_QUOTES, 'ISO-8859-1', false).'</a></li>';
 			}
 
 			$html .= '
