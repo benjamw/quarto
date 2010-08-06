@@ -173,10 +173,17 @@ function get_header($meta = null) {
 			$('a.help').fancybox({
 				autoDimensions : false,
 				width: 500,
-				height: 400
+				height: 400,
+				padding : 10,
+				overlayOpacity : 0.7,
+				hideOnContentClick : false
 			});
 		});
 	/*]]>*/</script>
+	<!-- hide the fancybox titles -->
+	<style type="text/css">/*<![CDATA[*/
+		#fancy_title { display: none !important; }
+	/*]]>*/</style>
 
 	{$head_data}
 	{$flash}
