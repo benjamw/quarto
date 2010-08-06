@@ -68,10 +68,7 @@ $(document).ready( function( ) {
 
 		inblur = true;
 
-		if (debug) {
-			window.location = 'ajax_helper.php'+debug_query+'&'+'notest=1&validity_test='+type+'&value='+$this.val( )+'&token='+$('#token').val( );
-			return;
-		}
+		// don't redirect on debug here
 
 		$.ajax({
 			type: 'POST',
