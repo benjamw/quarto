@@ -41,7 +41,8 @@ $players_maxed[] = $_SESSION['player_id'];
 // remove the maxed players from the invite list
 $players = array_diff($invite_players, $players_maxed);
 
-$opponent_selection = '<option value="">-- Open --</option>';
+$opponent_selection = '';
+#$opponent_selection = '<option value="">-- Open --</option>';
 foreach ($players_full as $player) {
 	if ($_SESSION['player_id'] == $player['player_id']) {
 		continue;

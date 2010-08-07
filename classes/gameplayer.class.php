@@ -529,18 +529,16 @@ return false;
 		$Mysql = Mysql::get_instance( );
 
 		$query = "
-			SELECT COUNT(GP.game_id) AS game_count
-				, GP.player_id
+			SELECT COUNT(G.game_id) AS game_count
+				, PE.player_id
 				, PE.max_games
-			FROM ".Game::GAME_PLAYER_TABLE." AS GP
+			FROM ".self::EXTEND_TABLE." AS PE
 				LEFT JOIN ".Game::GAME_TABLE." AS G
-					ON (G.game_id = GP.game_id)
-				LEFT JOIN ".self::EXTEND_TABLE." AS PE
-					ON (PE.player_id = GP.player_id)
-			WHERE GP.state NOT IN ('Resigned', 'Dead')
-				AND G.state <> 'Finished'
+					ON (G.white_id = PE.player_id
+						OR G.black_id = PE.player_id)
+			WHERE G.state NOT IN ('Waiting', 'Finished')
 				AND PE.max_games <> 0
-			GROUP BY GP.player_id
+			GROUP BY PE.player_id
 		";
 		$maxed_players = $Mysql->fetch_array($query);
 
