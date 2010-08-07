@@ -49,7 +49,7 @@ $(document).ready( function( ) {
 
 
 function choose_piece(id) {
-	$('div#pieces img')
+	$('div#piece_selection img')
 		.css('background-color', 'transparent')
 		.filter('img#p_'+id).css('background-color', '#F00');
 	$('#piece').val(id);
