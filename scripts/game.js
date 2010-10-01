@@ -6,6 +6,8 @@ var timer = false;
 var timeout = 2001;
 
 $(document).ready( function( ) {
+	hide_used_pieces( );
+
 	// make the board clicks work
 	if (my_turn) {
 		$('div#board div:not(div:has(img))').click( function(evnt) {
@@ -102,8 +104,13 @@ $(document).ready( function( ) {
 		}
 
 		$("div#board").replaceWith(build_board(move_history[current_index]['board'], move_history[current_index]['index']));
-		$("div#next").empty( ).append('<'+'p>Next Piece:</'+'p>'+get_piece_image(move_history[current_index]['next_piece']));
+		$("div#next").empty( );
 
+		if (current_index != (move_history.length - 1)) {
+			$("div#next").append('<'+'p>Next Piece:</'+'p>'+get_piece_image(move_history[current_index]['next_piece']));
+		}
+
+		hide_used_pieces( );
 		filter_buttons( );
 	});
 	filter_buttons( );
@@ -259,6 +266,28 @@ function filter_buttons( ) {
 	else if ((move_history.length - 1) == current_index) {
 		$('#playback input#next').attr('disabled', true);
 		$('#playback input#last').attr('disabled', true);
+	}
+}
+
+
+function hide_used_pieces( ) {
+	// show all the pieces
+	$("div#pieces div").show( );
+
+	// hide all used pieces
+	var board = move_history[current_index]['board'];
+	var piece = false;
+	for (var i = 0; i < 16; ++i) {
+		piece = board.charAt(i);
+		if ('.' != piece) {
+			$("div#pieces div:has(img#p_"+piece+")").hide( );
+		}
+	}
+
+	// also remove the next piece, if any
+	piece = move_history[current_index]['next_piece'];
+	if (piece) {
+		$("div#pieces div:has(img#p_"+piece+")").hide( );
 	}
 }
 

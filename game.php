@@ -251,12 +251,12 @@ echo get_header($meta);
 
 				<?php
 
-					$pieces = $Game->get_available_pieces( );
+					$pieces = range(0, 15);
 					shuffle($pieces);
 					shuffle($pieces);
 
 					foreach ($pieces as $piece) {
-						echo '<div>'.get_piece_image($piece).'</div>';
+						echo '<div>'.get_piece_image(strtoupper(dechex($piece))).'</div>';
 					}
 				?>
 
