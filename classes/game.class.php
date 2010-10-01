@@ -708,7 +708,7 @@ class Game
 
 		$player_id = (int) $this->_players['opponent']['player_id'];
 
-		if ($this->get_my_turn( ) || ('Finished' == $this->state) || $this->paused) {
+		if ($this->get_my_turn( ) || in_array($this->state, array('Finished', 'Draw')) || $this->paused) {
 			return false;
 		}
 
@@ -1117,7 +1117,7 @@ class Game
 		$WHERE = " WHERE G.state <> 'Waiting' ";
 		if ( ! $all) {
 			$WHERE .= "
-					AND G.state <> 'Finished'
+					AND G.state NOT IN ('Finished', 'Draw')
 					AND (G.white_id = {$player_id}
 						OR G.black_id = {$player_id})
 			";
@@ -1164,7 +1164,7 @@ class Game
 
 				$game['my_turn'] = (int) ($player_id == $game[$turn.'_id']);
 
-				if ('Finished' == $game['state']) {
+				if (in_array($game['state'], array('Finished', 'Draw'))) {
 					$game['my_turn'] = 0;
 					$game['in_game'] = 1;
 				}
@@ -1238,7 +1238,7 @@ class Game
 		$query = "
 			SELECT COUNT(*)
 			FROM ".self::GAME_TABLE."
-			WHERE state <> 'Finished'
+			WHERE state NOT IN ('Finished', 'Draw')
 		";
 		$count = $Mysql->fetch_value($query);
 
@@ -1295,7 +1295,7 @@ class Game
 		$query = "
 			SELECT game_id
 			FROM ".self::GAME_TABLE."
-			WHERE state = 'Finished'
+			WHERE state IN ('Finished', 'Draw')
 				AND modify_date < DATE_SUB(NOW( ), INTERVAL {$age} DAY)
 		";
 		$game_ids = $Mysql->fetch_value_array($query);
