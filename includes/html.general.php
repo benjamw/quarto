@@ -55,7 +55,7 @@ function get_header($meta = null) {
 				foreach ($list as $game) {
 					++$menu_data['games'];
 
-					if ($game['in_game']) {
+					if ($game['in_game'] && ! in_array($game['state'], array('Finished', 'Draw'))) {
 						++$menu_data['my_games'];
 					}
 
