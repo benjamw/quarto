@@ -90,8 +90,11 @@ if ('' == $GLOBALS['_DEFAULT_COLOR']) {
 	if (in_array('blue_white', $GLOBALS['_COLORS'])) {
 		$GLOBALS['_DEFAULT_COLOR'] = 'blue_white';
 	}
-	else {
+	elseif ($GLOBALS['_COLORS']) {
 		$GLOBALS['_DEFAULT_COLOR'] = $GLOBALS['_COLORS'][0];
+	}
+	else {
+		$GLOBALS['_DEFAULT_COLOR'] = '';
 	}
 }
 
