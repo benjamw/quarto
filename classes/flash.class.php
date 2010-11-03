@@ -122,7 +122,7 @@ class Flash
 	static public function get_instance( )
 	{
 		if (is_null(self::$_instance)) {
-			if (isset($_SESSION['FLASH']) && $_SESSION['FLASH'] instanceof Flash) {
+			if ( ! empty($_SESSION['FLASH']) && $_SESSION['FLASH'] instanceof Flash) {
 				$_SESSION['FLASH']->reset_debug( );
 				self::$_instance = $_SESSION['FLASH'];
 			}
@@ -170,7 +170,7 @@ class Flash
 
 			// don't allow a redirect if running through AJAX and
 			// certainly don't allow a redirect to the ajax helper
-			if (isset($GLOBALS['AJAX']) && $GLOBALS['AJAX']) {
+			if ( ! empty($GLOBALS['AJAX'])) {
 				if (true !== $orig_location) {
 					$_this->_location = $location;
 				}

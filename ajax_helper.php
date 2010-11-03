@@ -27,9 +27,14 @@ if ((false !== $pos) && test_debug( )) {
 
 // run registration checks
 if (isset($_POST['validity_test'])) {
-	if (('email' == $_POST['validity_test']) && ('' == $_POST['value'])) {
-		echo 'OK';
-		exit;
+#	if (('email' == $_POST['type']) && ('' == $_POST['value'])) {
+#		echo 'OK';
+#		exit;
+#	}
+
+	$player_id = 0;
+	if ( ! empty($_POST['profile'])) {
+		$player_id = (int) $_SESSION['player_id'];
 	}
 
 	switch ($_POST['validity_test']) {
@@ -108,7 +113,7 @@ if (isset($_POST['timer'])) {
 // do some more validity checking for the rest of the functions
 
 if (empty($DEBUG) && empty($_POST['notoken'])) {
-	test_token(isset($_POST['notest']) && $_POST['notest']);
+	test_token( ! empty($_POST['keep_token']));
 }
 
 

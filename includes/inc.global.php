@@ -1,7 +1,5 @@
 <?php
 
-define('GAME_NAME', 'Quarto');
-
 $debug = false;
 
 // set some ini stuff
@@ -41,17 +39,17 @@ ini_set('error_log', LOG_DIR.'php.err');
 if (is_file(INCLUDE_DIR.'config.php')) {
 	require_once INCLUDE_DIR.'config.php';
 }
-/*/
-elseif ('setup-config.php' != basename($_SERVER['PHP_SELF'])) {
-	header('Location: setup-config.php');
-/*/
-elseif ('install.php' != basename($_SERVER['PHP_SELF'])) {
-	header('Location: install.php');
-//*/
-	exit;
-}
+#/*/
+#elseif ('setup-config.php' != basename($_SERVER['PHP_SELF'])) {
+#	header('Location: setup-config.php');
+#/*/
+#elseif ('install.php' != basename($_SERVER['PHP_SELF'])) {
+#	header('Location: install.php');
+#//*/
+#	exit;
+#}
 
-require_once INCLUDE_DIR.'inc.version.php';
+require_once INCLUDE_DIR.'inc.settings.php';
 require_once INCLUDE_DIR.'func.global.php';
 require_once INCLUDE_DIR.'html.general.php';
 require_once INCLUDE_DIR.'html.tables.php';

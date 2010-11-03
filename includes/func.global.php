@@ -12,7 +12,7 @@
  */
 function call($var = 'Th&F=xUFucreSp2*ezAhe=ApuPR*$axe', $bypass = false, $show_from = true, $new_window = false)
 {
-	if ((( ! defined('DEBUG') || ! DEBUG) || (isset($GLOBALS['NODEBUG']) && $GLOBALS['NODEBUG'])) && ! (bool) $bypass) {
+	if ((( ! defined('DEBUG') || ! DEBUG) || ! empty($GLOBALS['NODEBUG'])) && ! (bool) $bypass) {
 		return false;
 	}
 

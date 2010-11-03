@@ -339,7 +339,7 @@ class Mysql
 		$this->result = @mysql_query($this->query, $this->link_id);
 		$this->query_time = microtime_float( ) - $time;
 
-		if ($this->_query_debug && ! (isset($GLOBALS['AJAX']) && $GLOBALS['AJAX'])) {
+		if ($this->_query_debug && empty($GLOBALS['AJAX'])) {
 			$this->query = trim(preg_replace('/\\s+/', ' ', $this->query));
 			echo "<div style='background:#FFF;color:#009;'><br /><strong>".basename($backtrace_file['file']).' on '.$backtrace_file['line']."</strong>- {$this->query} - <strong>Aff(".$this->affected_rows( ).") (".number_format($this->query_time, 5)." s)</strong></div>";
 		}

@@ -166,7 +166,7 @@ and should not be replied to.
 		$from_email = Settings::read('from_email');
 
 		// send the email
-		$headers = "From: {".GAME_NAME."} <{$from_email}>\r\n";
+		$headers = "From: ".GAME_NAME." <{$from_email}>\r\n";
 
 		$message = html_entity_decode($message);
 
