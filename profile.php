@@ -17,7 +17,7 @@ if (isset($_POST['submit'])) {
 $meta['title'] = 'Update Profile';
 $meta['head_data'] = '
 	<script type="text/javascript">//<![CDATA[
-		var profile = true;
+		var profile = 1;
 	//]]></script>
 	<script type="text/javascript" src="scripts/register.js"></script>
 ';

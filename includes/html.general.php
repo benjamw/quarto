@@ -207,8 +207,8 @@ EOF;
 			<ul>
 				<li'.get_active('index').'><a href="index.php'.$GLOBALS['_?_DEBUG_QUERY'].'" title="(Your Turn | Your Games | Total Games)"'.(($allow_blink && $menu_data['my_turn']) ? ' class="blink"' : '').'>Games ('.$menu_data['my_turn'].'|'.$menu_data['my_games'].'|'.$menu_data['games'].')</a></li>
 				<li'.get_active('invite').'><a href="invite.php'.$GLOBALS['_?_DEBUG_QUERY'].'" title="(Invites Recieved | Invites Sent)"'.(($allow_blink && $menu_data['in_vites']) ? ' class="blink"' : '').'>Invitations ('.$menu_data['in_vites'].'|'.$menu_data['out_vites'].')</a></li>
-				<li'.get_active('stats').'><a href="stats.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Statistics</a></li>
 				<li'.get_active('messages').'><a href="messages.php'.$GLOBALS['_?_DEBUG_QUERY'].'" title="(New Messages | Total Messages)"'.(($allow_blink && $menu_data['new_msgs']) ? ' class="blink"' : '').'>Messages ('.$menu_data['new_msgs'].'|'.$menu_data['msgs'].')</a></li>
+				<li'.get_active('stats').'><a href="stats.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Statistics</a></li>
 				<li'.get_active('prefs').'><a href="prefs.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Preferences</a></li>
 				<li'.get_active('profile').'><a href="profile.php'.$GLOBALS['_?_DEBUG_QUERY'].'">Profile</a></li>
 				';

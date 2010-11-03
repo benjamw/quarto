@@ -59,7 +59,7 @@ if (isset($_POST['register'])) {
 $meta['title'] = 'Registration';
 $meta['head_data'] = '
 	<script type="text/javascript">//<![CDATA[
-		var profile = false;
+		var profile = 0;
 	//]]></script>
 	<script type="text/javascript" src="scripts/register.js"></script>
 ';

@@ -1,6 +1,10 @@
 TODO
 ------------------
 
+- ran into error where all pieces were shown as avail when they were not
+	when running ajax, make sure piece is available before storing
+	if piece is not available, return ajax error and make them do it again
+
 - when viewing game as guest, turn is incorrect
 
 - output ajax sent and recieved in comment at end of html for debugging
