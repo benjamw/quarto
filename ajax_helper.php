@@ -89,7 +89,7 @@ if (isset($_POST['chat'])) {
 		$return = $return[0];
 	}
 	catch (MyException $e) {
-		$return['error'] = $e->outputMessage( );
+		$return['error'] = 'ERROR: '.$e->outputMessage( );
 	}
 
 	echo json_encode($return);
@@ -153,7 +153,7 @@ if (isset($_POST['nudge'])) {
 		$Game->nudge($player_id);
 	}
 	catch (MyException $e) {
-		$return['error'] = $e->outputMessage( );
+		$return['error'] = 'ERROR: '.$e->outputMessage( );
 	}
 
 	echo json_encode($return);
@@ -170,7 +170,7 @@ if (isset($_POST['resign'])) {
 		$Game->resign($_SESSION['player_id']);
 	}
 	catch (MyException $e) {
-		$return['error'] = $e->outputMessage( );
+		$return['error'] = 'ERROR: '.$e->outputMessage( );
 	}
 
 	echo json_encode($return);
