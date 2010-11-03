@@ -4,6 +4,10 @@
 // globals
 var inblur = false;
 
+if (undefined == profile) {
+	profile = 0;
+}
+
 $(document).ready( function( ) {
 	$('#first_name').focus( );
 
@@ -71,7 +75,7 @@ $(document).ready( function( ) {
 		$.ajax({
 			type: 'POST',
 			url: 'ajax_helper.php',
-			data: 'notest=1&validity_test='+type+'&value='+$this.val( )+'&token='+$('#token').val( ),
+			data: 'keep_token=1&validity_test='+type+'&value='+$this.val( )+'&token='+$('#token').val( )+'&profile='+profile,
 			success: function(msg) {
 				if ('OK' == msg) {
 					// display a checkmark next to the input box

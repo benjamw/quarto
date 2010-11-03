@@ -11,7 +11,7 @@
 
 /* body background */
 body {
-	background: #FFF url(../images/bg_chess_light.png) 40% 95% no-repeat fixed;
+	background: #FFF;
 }
 
 
@@ -31,6 +31,10 @@ h1 {
 
 
 /* main (basic) */
+.warning {
+	color: #D00;
+}
+
 h2 {
 	border-bottom: 1px solid #777;
 }
@@ -121,36 +125,26 @@ fieldset {
 
 /* menu */
 #menu ,
-#mygames {
+#menuholder {
 	border: 1px solid #CCC;
 }
 
-#menu a ,
-#mygames a {
+#menu a {
 	color: #555;
 	background-color: #F1F3F5;
 	border-bottom: 1px solid #CCC;
 }
 
-#menu a:hover,
-#mygames a:hover {
+#menu li a:hover {
 	color: #FFF;
 	background-color: #666BAB;
 }
 
-#menu li.active a,
-#mygames li.active a {
+#menu li.active a {
 	color: #30356F;
 	background-color: #DDDFF3;
 	border-color: #CCC;
 }
-
-
-/* games list */
-#mygames .dead a { color: #CCC; }
-#mygames .placing a { color: #F00; }
-#mygames .playing a { font-weight: bold; }
-#mygames .waiting a { font-weight: normal; }
 
 
 /* notes */

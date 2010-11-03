@@ -20,8 +20,20 @@ $pos = strpos(__FILE__, preg_replace('%[\\/]+%', DIRECTORY_SEPARATOR, $_SERVER['
 if ((false !== $pos) && test_debug( )) {
 	$GLOBALS['NODEBUG'] = false;
 	$_GET['token'] = $_SESSION['token'];
+	$_GET['keep_token'] = true;
 	$_POST = $_GET;
 	$DEBUG = true;
+	call('AJAX HELPER');
+	call($_POST);
+}
+
+
+// run the index page refresh checks
+if (isset($_POST['timer'])) {
+	$message_count = (int) Message::check_new($_SESSION['player_id']);
+	$turn_count = (int) Game::check_turns($_SESSION['player_id']);
+	echo $message_count + $turn_count;
+	exit;
 }
 
 
@@ -104,7 +116,7 @@ $Game = new Game((int) $_SESSION['game_id']);
 
 
 // run the game refresh check
-if (isset($_POST['timer'])) {
+if (isset($_POST['refresh'])) {
 	echo $Game->last_move;
 	exit;
 }

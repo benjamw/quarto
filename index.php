@@ -5,9 +5,21 @@ require_once 'includes/inc.global.php';
 // remove any previous game sessions
 unset($_SESSION['game_id']);
 
+// grab the message and game counts
+$message_count = (int) Message::check_new($_SESSION['player_id']);
+$turn_count = (int) Game::check_turns($_SESSION['player_id']);
+$turn_msg_count = $message_count + $turn_count;
+
 $meta['title'] = 'Game List';
 $meta['head_data'] = '
+	<script type="text/javascript" src="scripts/jquery.jplayer.js"></script>
 	<script type="text/javascript" src="scripts/index.js"></script>
+	<script type="text/javascript">//<![CDATA[
+		var turn_msg_count = '.$turn_msg_count.';
+	//]]></script>
+';
+$meta['foot_data'] = '
+	<div id="sounds"></div>
 ';
 
 

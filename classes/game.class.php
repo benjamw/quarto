@@ -1253,6 +1253,34 @@ class Game
 	}
 
 
+	/** static public function check_turns
+	 *		Checks if it's the given player's turn in any games
+	 *
+	 * @param int player id
+	 * @return int number of games player has a turn in
+	 */
+	static public function check_turns($player_id)
+	{
+		call(__METHOD__);
+
+		try {
+			$list = self::get_list($player_id, false);
+		}
+		catch (MyException $e) {
+			throw $e;
+		}
+
+		$count = 0;
+		foreach ($list as $entry) {
+			if ($entry['my_turn']) {
+				++$count;
+			}
+		}
+
+		return $count;
+	}
+
+
 	/** public function delete_inactive
 	 *		Deletes the inactive games from the database
 	 *

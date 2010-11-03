@@ -232,7 +232,7 @@ function ajax_refresh( ) {
 	$.ajax({
 		type: 'POST',
 		url: 'ajax_helper.php',
-		data: 'timer=1',
+		data: 'refresh=1',
 		success: function(msg) {
 			if ((msg != last_move) && reload) {
 				window.location.reload( );

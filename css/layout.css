@@ -84,22 +84,22 @@ legend {
 	font-size: larger;
 }
 
-.warning {
+.warning, .warning * {
 	color: #C00;
 	font-weight: bold;
 }
 
-.notice {
+.notice, .notice * {
 	color: #CC0;
 	font-weight: bold;
 }
 
-.highlight {
+.highlight, .highlight * {
 	color: #00C;
 	font-weight: bold;
 }
 
-.instruction {
+.instruction, .instruction * {
 	color: #AAA;
 }
 
