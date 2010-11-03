@@ -1,16 +1,17 @@
 <?php
 
-// $Id: ajax_helper.php 26 2010-04-24 22:31:50Z Benjam $
-
 $GLOBALS['NODEBUG'] = true;
 $GLOBALS['AJAX'] = true;
+
 
 // don't require log in when testing for used usernames and emails
 if (isset($_POST['validity_test']) || (isset($_GET['validity_test']) && isset($_GET['DEBUG']))) {
 	define('LOGIN', false);
 }
 
+
 require_once 'includes/inc.global.php';
+
 
 // make sure we are running this file directly
 // (although this will always be a non-false value, so... ???)
@@ -44,7 +45,6 @@ if (isset($_POST['validity_test'])) {
 				Player::check_database($username, $email, $player_id);
 			}
 			catch (MyException $e) {
-				debug($e);
 				echo $e->getCode( );
 				exit;
 			}
@@ -111,10 +111,12 @@ if (empty($DEBUG) && empty($_POST['notoken'])) {
 	test_token(isset($_POST['notest']) && $_POST['notest']);
 }
 
+
 if ($_POST['game_id'] != $_SESSION['game_id']) {
 	echo 'ERROR: Incorrect game id given';
 	exit;
 }
+
 
 // make sure we are the player we say we are
 // unless we're an admin, then it's ok
@@ -123,6 +125,7 @@ if (($player_id != $_SESSION['player_id']) && ! $GLOBALS['Player']->is_admin) {
 	echo 'ERROR: Incorrect player id given';
 	exit;
 }
+
 
 // run the 'Nudge' button
 if (isset($_POST['nudge'])) {

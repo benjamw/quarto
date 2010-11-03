@@ -14,7 +14,6 @@
 |
 |   > Module Version Number: 0.8.0
 |
-|   $Id: gameplayer.class.php 27 2010-06-11 02:14:31Z Benjam $
 +---------------------------------------------------------------------------
 */
 
@@ -430,6 +429,7 @@ class GamePlayer
 		$result = $this->_mysql->fetch_assoc($query);
 
 		if ( ! $result) {
+// TODO: find out what is going on here and fix.
 #			throw new MyException(__METHOD__.': Data not found in database (#'.$this->id.')');
 return false;
 		}

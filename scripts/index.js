@@ -1,7 +1,6 @@
 
 // index javascript
 
-// $Id: index.js 21 2009-12-05 06:50:19Z cchristensen $
 
 $(document).ready( function( ) {
 	// make the table row clicks work

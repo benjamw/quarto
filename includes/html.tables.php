@@ -2,8 +2,6 @@
 
 // build table structure
 
-// $Id: html.tables.php 27 2010-06-11 02:14:31Z Benjam $
-
 /*
 
 	this file contains a function that will build an html table given some basic

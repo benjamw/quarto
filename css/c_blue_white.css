@@ -2,8 +2,6 @@
 /* WebChess 2.0 colors */
 /* blue-white created by Benjam Welker (original colors in CVS) */
 
-/* $Id: c_blue_white.css 15 2009-09-06 20:22:18Z cchristensen $ */
-
 /*
 	all the layout for the webpages are specified in the layout.css
 	file.  the colors have been seperated out for ease of customization
@@ -165,7 +163,6 @@ fieldset {
 	background-color: #F1F3F5;
 	border: 1px solid #CCC;
 }
-
 
 /* messages */
 .messageheader {

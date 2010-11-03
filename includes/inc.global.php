@@ -1,7 +1,5 @@
 <?php
 
-// $Id: inc.global.php 21 2009-12-05 06:50:19Z cchristensen $
-
 define('GAME_NAME', 'Quarto');
 
 $debug = false;

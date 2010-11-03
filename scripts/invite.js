@@ -1,6 +1,4 @@
 
-// $Id: invite.js 26 2010-04-24 22:31:50Z Benjam $
-
 var reload = true; // do not change this
 
 $(document).ready( function( ) {

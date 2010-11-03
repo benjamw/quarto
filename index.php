@@ -1,7 +1,5 @@
 <?php
 
-// $Id: index.php 21 2009-12-05 06:50:19Z cchristensen $
-
 require_once 'includes/inc.global.php';
 
 // remove any previous game sessions
@@ -11,6 +9,7 @@ $meta['title'] = 'Game List';
 $meta['head_data'] = '
 	<script type="text/javascript" src="scripts/index.js"></script>
 ';
+
 
 // grab the list of games
 $list = Game::get_list($_SESSION['player_id']);

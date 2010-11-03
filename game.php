@@ -1,7 +1,5 @@
 <?php
 
-// $Id: game.php 27 2010-06-11 02:14:31Z Benjam $
-
 require_once 'includes/inc.global.php';
 
 // grab the game id
@@ -289,5 +287,6 @@ echo get_header($meta);
 
 <?php
 
+call($GLOBALS);
 echo get_footer( );
 

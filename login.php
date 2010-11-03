@@ -1,7 +1,5 @@
 <?php
 
-// $Id: login.php 27 2010-06-11 02:14:31Z Benjam $
-
 define('LOGIN', false);
 require_once 'includes/inc.global.php';
 

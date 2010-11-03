@@ -1,7 +1,5 @@
 <?php
 
-// $Id: func.array.php 21 2009-12-05 06:50:19Z cchristensen $
-
 /**
  *		ARRAY FUNCTIONS
  * * * * * * * * * * * * * * * * * * * * * * * * * * */

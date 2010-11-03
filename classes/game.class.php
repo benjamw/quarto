@@ -20,7 +20,6 @@
 |
 |   > Module Version Number: 0.8.0
 |
-|   $Id: game.class.php 27 2010-06-11 02:14:31Z Benjam $
 +---------------------------------------------------------------------------
 */
 
@@ -387,6 +386,7 @@ class Game
 		}
 
 		$_DATA['create_date '] = 'NOW( )'; // note the trailing space in the field name, this is not a typo
+
 
 		// THIS IS THE ONLY PLACE IN THE CLASS WHERE IT BREAKS THE _pull / _save MENTALITY
 		// BECAUSE I NEED THE INSERT ID FOR THE REST OF THE GAME FUNCTIONALITY

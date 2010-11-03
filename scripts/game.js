@@ -1,6 +1,4 @@
 
-// $Id: game.js 21 2009-12-05 06:50:19Z cchristensen $
-
 var reload = true; // do not change this
 var timer = false;
 var timeout = 2001;

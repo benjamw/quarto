@@ -1,7 +1,5 @@
 <?php
 
-// $Id$
-
 $GLOBALS['__EMAIL_DATA'] = array(
 	'invite' => array(
 		'subject' => 'Game Invitation',

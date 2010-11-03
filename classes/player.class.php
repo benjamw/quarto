@@ -14,7 +14,6 @@
 |
 |   > Module Version Number: 0.8.0
 |
-|   $Id: player.class.php 21 2009-12-05 06:50:19Z cchristensen $
 +---------------------------------------------------------------------------
 */
 
@@ -910,8 +909,6 @@ class Player
 	 */
 	static public function check_database($username, $email, $player_id = 0)
 	{
-		call(__METHOD__);
-
 		$Mysql = Mysql::get_instance( );
 
 		// make sure our query is clean

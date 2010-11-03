@@ -1,7 +1,5 @@
 <?php
 
-// $Id: admin.php 27 2010-06-11 02:14:31Z Benjam $
-
 require_once 'includes/inc.global.php';
 
 // make sure we are an admin

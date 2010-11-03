@@ -1,7 +1,5 @@
 <?php
 
-// $Id: html.general.php 27 2010-06-11 02:14:31Z Benjam $
-
 /** function get_header
  *		Generate the HTML header portion of the page
  *

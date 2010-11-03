@@ -1,7 +1,5 @@
 <?php
 
-// $Id: invite.php 23 2010-03-15 08:05:51Z Benjam $
-
 require_once 'includes/inc.global.php';
 
 // this has nothing to do with creating a game
@@ -62,6 +60,7 @@ foreach ($pieces as $piece) {
 	$pieces_html .= '<div>'.get_piece_image($piece).'</div>';
 	$piece_selection .= '<option>'.strtoupper($piece).'</option>';
 }
+
 
 $meta['title'] = 'Send Game Invitation';
 $meta['head_data'] = '

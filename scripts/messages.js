@@ -1,6 +1,4 @@
 
-// $Id: messages.js 6 2009-07-08 10:39:01Z cchristensen $
-
 $(document).ready( function( ) {
 
 	// MESSAGES

@@ -1,7 +1,5 @@
 <?php
 
-// $Id: stats.php 14 2009-07-28 17:04:43Z cchristensen $
-
 require_once 'includes/inc.global.php';
 
 $meta['title'] = 'Statistics';

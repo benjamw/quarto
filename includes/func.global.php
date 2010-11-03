@@ -1,7 +1,5 @@
 <?php
 
-// $Id: func.global.php 205 2009-10-11 20:55:13Z cchristensen $
-
 /** function call [dump] [debug]
  *		This function is for debugging only
  *		Outputs given var to screen
