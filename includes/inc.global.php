@@ -94,6 +94,16 @@ if ('' == $GLOBALS['_DEFAULT_COLOR']) {
 	}
 }
 
+// set the session cookie parameters so the cookie is only valid for this game
+$parts = pathinfo($_SERVER['REQUEST_URI']);
+
+$path = $parts['dirname'];
+if (empty($parts['extension'])) {
+	$path .= $parts['basename'];
+}
+$path = str_replace('\\', '/', $path).'/';
+
+session_set_cookie_params(0, $path);
 session_start( );
 
 // make sure we don't cross site session steal in our own site
