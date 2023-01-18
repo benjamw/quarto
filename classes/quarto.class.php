@@ -102,12 +102,13 @@ class Quarto
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 	/** public function __construct
-	 *		Class constructor
-	 *		Sets all outside data
+	 *        Class constructor
+	 *        Sets all outside data
 	 *
-	 * @param string optional board
+	 * @param null $board
+	 *
+	 * @throws MyException
 	 * @action instantiates object
-	 * @return void
 	 */
 	public function __construct($board = null)
 	{
@@ -127,12 +128,13 @@ class Quarto
 
 
 	/** public function __get
-	 *		Class getter
-	 *		Returns the requested property if the
-	 *		requested property is not _private
+	 *        Class getter
+	 *        Returns the requested property if the
+	 *        requested property is not _private
 	 *
 	 * @param string property name
 	 * @return mixed property value
+	 * @throws MyException
 	 */
 	public function __get($property)
 	{
@@ -149,14 +151,15 @@ class Quarto
 
 
 	/** public function __set
-	 *		Class setter
-	 *		Sets the requested property if the
-	 *		requested property is not _private
+	 *        Class setter
+	 *        Sets the requested property if the
+	 *        requested property is not _private
 	 *
-	 * @param string property name
-	 * @param mixed property value
-	 * @action optional validation
+	 * @param $property
+	 * @param $value
 	 * @return bool success
+	 * @throws MyException
+	 * @action optional validation
 	 */
 	public function __set($property, $value)
 	{
@@ -210,11 +213,12 @@ class Quarto
 
 
 	/** public function set_board
-	 *		Sets the board
+	 *        Sets the board
 	 *
 	 * @param string board
-	 * @action validation
 	 * @return void
+	 * @throws MyException
+	 * @action validation
 	 */
 	public function set_board($board)
 	{
@@ -316,7 +320,7 @@ class Quarto
 		call(__METHOD__);
 		$include_next_piece = (bool) $include_next_piece;
 
-		$pieces = array( );
+		$pieces = [];
 		$board = $this->board;
 		call($board);
 
@@ -359,11 +363,13 @@ class Quarto
 
 
 	/** public function do_move
-	 *		Places the piece on the given square
+	 *        Places the piece on the given square
 	 *
 	 * @param int board index (or target)
-	 * @action places the piece
+	 * @param null $piece
 	 * @return void
+	 * @throws MyException
+	 * @action places the piece
 	 */
 	public function do_move($index, $piece = null)
 	{
@@ -409,7 +415,7 @@ class Quarto
 		call(__METHOD__);
 		call($this->get_board_ascii( ));
 
-		$return = array( );
+		$return = [];
 
 		// search the board for matching attributes
 
@@ -440,7 +446,7 @@ class Quarto
 			}
 
 			if ($and || $not) {
-				$cols = array('A', 'B', 'C', 'D');
+				$cols = ['A', 'B', 'C', 'D'];
 				$return[$cols[$x]] = $and | $not;
 			}
 		}
@@ -520,7 +526,7 @@ class Quarto
 				}
 
 				if ($and || $not) {
-					$diags = array('\\', '/');
+					$diags = ['\\', '/'];
 
 					$l = $j;
 					if ($i) {
@@ -594,7 +600,7 @@ class Quarto
 
 		// check if the game is over due to draw
 		if ( ! $return && (false === strpos($this->board, '.'))) {
-			$return = array('DRAW');
+			$return = ['DRAW'];
 		}
 
 		call($return);
@@ -603,11 +609,12 @@ class Quarto
 
 
 	/** public function target_to_index
-	 *		Converts a human target (E5) to
-	 *		a computer string index
+	 *        Converts a human target (E5) to
+	 *        a computer string index
 	 *
-	 * @param optional string human target (E5)
+	 * @param bool $target
 	 * @return int computer string index
+	 * @throws MyException
 	 */
 	public function target_to_index($target = false)
 	{
@@ -663,7 +670,7 @@ class Quarto
 			return $index;
 		}
 
-		$cols = array('A','B','C','D');
+		$cols = ['A', 'B', 'C', 'D'];
 
 		$target = $cols[($index % 4)];
 		$target .= floor($index / 4) + 1;
@@ -673,12 +680,13 @@ class Quarto
 
 
 	/** protected function _place_piece
-	 *		Places the piece on the board
+	 *        Places the piece on the board
 	 *
-	 * @param string piece code in hex format
-	 * @param int piece location index
-	 * @action places the boat
+	 * @param $piece
+	 * @param $index
 	 * @return void
+	 * @throws MyException
+	 * @action places the boat
 	 */
 	protected function _place_piece($piece, $index)
 	{
@@ -712,12 +720,13 @@ class Quarto
 
 
 	/** protected function _validate_target
-	 *		Validates the given human readable target
-	 *		and saves it internally
+	 *        Validates the given human readable target
+	 *        and saves it internally
 	 *
 	 * @param string human readable target
-	 * @action validates and stores human readable target
 	 * @return string human readable target
+	 * @throws MyException
+	 * @action validates and stores human readable target
 	 */
 	protected function _validate_target($target)
 	{

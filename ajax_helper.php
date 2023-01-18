@@ -13,12 +13,11 @@ if (isset($_POST['validity_test']) || (isset($_GET['validity_test']) && isset($_
 require_once 'includes/inc.global.php';
 
 
-// make sure we are running this file directly
-// (although this will always be a non-false value, so... ???)
-$pos = strpos(__FILE__, preg_replace('%[\\/]+%', DIRECTORY_SEPARATOR, $_SERVER['SCRIPT_NAME']));
-
-if ((false !== $pos) && test_debug( )) {
+// if we are debugging, change some things for us
+// (although REQUEST_METHOD may not always be valid)
+if (('GET' == $_SERVER['REQUEST_METHOD']) && defined('DEBUG') && DEBUG) {
 	$GLOBALS['NODEBUG'] = false;
+	$GLOBALS['AJAX'] = false;
 	$_GET['token'] = $_SESSION['token'];
 	$_GET['keep_token'] = true;
 	$_POST = $_GET;
@@ -54,7 +53,7 @@ if (isset($_POST['validity_test'])) {
 		case 'email' :
 			$username = '';
 			$email = '';
-			${$_POST['validity_test']} = sani($_POST['value']);
+			${$_POST['validity_test']} = $_POST['value'];
 
 			$player_id = (isset($_POST['player_id']) ? (int) $_POST['player_id'] : 0);
 
@@ -106,13 +105,21 @@ if (isset($_POST['action']) && ('delete' == $_POST['action'])) {
 	catch (MyEception $e) {
 		echo 'ERROR: Could not delete game';
 	}
+	exit;
+}
 
+
+// we'll need a game id from here forward, so make sure we have one
+if (empty($_SESSION['game_id'])) {
+	echo 'ERROR: Game not found';
 	exit;
 }
 
 
 // init our game
-$Game = new Game((int) $_SESSION['game_id']);
+if ( ! isset($Game)) {
+	$Game = new Game((int) $_SESSION['game_id']);
+}
 
 
 // run the game refresh check
@@ -139,48 +146,44 @@ if ($_POST['game_id'] != $_SESSION['game_id']) {
 // unless we're an admin, then it's ok
 $player_id = (int) $_POST['player_id'];
 if (($player_id != $_SESSION['player_id']) && ! $GLOBALS['Player']->is_admin) {
-	echo 'ERROR: Incorrect player id given';
-	exit;
+	throw new MyException('ERROR: Incorrect player id given');
 }
 
 
-// run the 'Nudge' button
-if (isset($_POST['nudge'])) {
-	$return = array( );
-	$return['token'] = $_SESSION['token'];
+// run the simple button actions
+$actions = [
+	'nudge',
+	'resign',
+	'offer_draw',
+	'accept_draw',
+	'reject_draw',
+	'request_undo',
+	'accept_undo',
+	'reject_undo',
+];
 
-	try {
-		$Game->nudge($player_id);
+foreach ($actions as $action) {
+	if (isset($_POST[$action])) {
+		try {
+			if ($Game->{$action}($player_id)) {
+				echo 'OK';
+			}
+			else {
+				echo 'ERROR';
+			}
+		}
+		catch (MyException $e) {
+			echo $e;
+		}
+
+		exit;
 	}
-	catch (MyException $e) {
-		$return['error'] = 'ERROR: '.$e->outputMessage( );
-	}
-
-	echo json_encode($return);
-	exit;
-}
-
-
-// run the 'Resign' button
-if (isset($_POST['resign'])) {
-	$return = array( );
-	$return['token'] = $_SESSION['token'];
-
-	try {
-		$Game->resign($_SESSION['player_id']);
-	}
-	catch (MyException $e) {
-		$return['error'] = 'ERROR: '.$e->outputMessage( );
-	}
-
-	echo json_encode($return);
-	exit;
 }
 
 
 // run the moves
 if (isset($_POST['move'])) {
-	$return = array( );
+	$return = [];
 	$return['token'] = $_SESSION['token'];
 
 	try {

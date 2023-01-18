@@ -398,7 +398,7 @@
 					equal;
 
 				start_pos = {
-					top		:	pos.top ,
+					top		:	pos.top,
 					left	:	pos.left,
 					width	:	wrap.width(),
 					height	:	wrap.height()
@@ -956,7 +956,7 @@
 			var pos = wrap.position();
 
 			final_pos = {
-				top		:	pos.top ,
+				top		:	pos.top,
 				left	:	pos.left,
 				width	:	wrap.width(),
 				height	:	wrap.height()

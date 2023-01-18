@@ -105,12 +105,14 @@ class GamePlayer
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 	/** public function __construct
-	 *		Class constructor
-	 *		Sets all outside data
+	 *        Class constructor
+	 *        Sets all outside data
 	 *
-	 * @param int optional player id
+	 * @param null $id
+	 *
+	 * @throws MyException
+	 * @throws MySQLException
 	 * @action instantiates object
-	 * @return void
 	 */
 	public function __construct($id = null)
 	{
@@ -162,32 +164,33 @@ class GamePlayer
 
 
 	/** public function log_in
-	 *		Runs the parent's log_in function
-	 *		then, if success, tests game player
-	 *		database to see if this player has been
-	 *		here before, if not, it adds then to the
-	 *		database, and if so, refreshes the last_online value
+	 *        Runs the parent's log_in function
+	 *        then, if success, tests game player
+	 *        database to see if this player has been
+	 *        here before, if not, it adds then to the
+	 *        database, and if so, refreshes the last_online value
 	 *
-	 * @param void
+	 * @return bool success
+	 * @throws MySQLException
 	 * @action logs the player in
 	 * @action optionally adds new game player data to the database
-	 * @return bool success
 	 */
 	public function log_in( )
 	{
 		// this will redirect and exit upon failure
 		parent::log_in( );
 
-		// test an arbitrary property for existance, so we don't _pull twice unnecessarily
-		if (is_null($this->color)) {
-			$this->_mysql->insert(self::EXTEND_TABLE, array('player_id' => $this->id));
+		// test an arbitrary property for existence, so we don't _pull twice unnecessarily
+		// but don't test color, because it might actually be null when valid
+		if (is_null($this->last_online)) {
+			$this->_mysql->insert(self::EXTEND_TABLE, ['player_id' => $this->id]);
 
 			$this->_pull( );
 		}
 
 		// don't update the last online time if we logged in as an admin
 		if ( ! isset($_SESSION['admin_id'])) {
-			$this->_mysql->insert(self::EXTEND_TABLE, array('last_online' => NULL), " WHERE player_id = '{$this->id}' ");
+			$this->_mysql->insert(self::EXTEND_TABLE, ['last_online' => NULL], " WHERE player_id = '{$this->id}' ");
 		}
 
 		return true;
@@ -195,13 +198,14 @@ class GamePlayer
 
 
 	/** public function register
-	 *		Registers a new player in the extend table
-	 *		also calls the parent register function
-	 *		which performs some validity checks
+	 *        Registers a new player in the extend table
+	 *        also calls the parent register function
+	 *        which performs some validity checks
 	 *
-	 * @param void
-	 * @action creates a new player in the database
 	 * @return bool success
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action creates a new player in the database
 	 */
 	public function register( )
 	{
@@ -216,68 +220,73 @@ class GamePlayer
 		}
 
 		if ($this->id) {
-			$this->_mysql->insert(self::EXTEND_TABLE, array('player_id' => $this->id));
+			$this->_mysql->insert(self::EXTEND_TABLE, ['player_id' => $this->id]);
+
+			// update the last_online time so we don't break things later
+			$this->_mysql->insert(self::EXTEND_TABLE, ['last_online' => NULL], " WHERE player_id = '{$this->id}' ");
 		}
 	}
 
 
 	/** public function add_win
-	 *		Adds a win to this player's stats
-	 *		both here, and in the database
+	 *        Adds a win to this player's stats
+	 *        both here, and in the database
 	 *
-	 * @param void
-	 * @action adds a win in the database
 	 * @return void
+	 * @throws MySQLException
+	 * @action adds a win in the database
 	 */
 	public function add_win( )
 	{
 		$this->wins++;
 
 		// note the trailing space on the field name, it's not a typo
-		$this->_mysql->insert(self::EXTEND_TABLE, array('wins ' => 'wins + 1'), " WHERE player_id = '{$this->id}' ");
+		$this->_mysql->insert(self::EXTEND_TABLE, ['wins ' => 'wins + 1'], " WHERE player_id = '{$this->id}' ");
 	}
 
 
 	/** public function add_draw
-	 *		Adds a draw to this player's stats
-	 *		both here, and in the database
+	 *        Adds a draw to this player's stats
+	 *        both here, and in the database
 	 *
-	 * @param void
-	 * @action adds a draw in the database
 	 * @return void
+	 * @throws MySQLException
+	 * @action adds a draw in the database
 	 */
 	public function add_draw( )
 	{
 		$this->draws++;
 
 		// note the trailing space on the field name, it's not a typo
-		$this->_mysql->insert(self::EXTEND_TABLE, array('draws ' => 'draws + 1'), " WHERE player_id = '{$this->id}' ");
+		$this->_mysql->insert(self::EXTEND_TABLE, ['draws ' => 'draws + 1'], " WHERE player_id = '{$this->id}' ");
 	}
 
 
 	/** public function add_loss
-	 *		Adds a loss to this player's stats
-	 *		both here, and in the database
+	 *        Adds a loss to this player's stats
+	 *        both here, and in the database
 	 *
-	 * @param void
-	 * @action adds a loss in the database
 	 * @return void
+	 * @throws MySQLException
+	 * @action adds a loss in the database
 	 */
 	public function add_loss( )
 	{
 		$this->losses++;
 
 		// note the trailing space on the field name, it's not a typo
-		$this->_mysql->insert(self::EXTEND_TABLE, array('losses ' => 'losses + 1'), " WHERE player_id = '{$this->id}' ");
+		$this->_mysql->insert(self::EXTEND_TABLE, ['losses ' => 'losses + 1'], " WHERE player_id = '{$this->id}' ");
 	}
 
 
 	/** public function admin_delete
-	 *		Deletes the given players from the players database
+	 *        Deletes the given players from the players database
 	 *
 	 * @param mixed csv or array of user ids
-	 * @action deletes the players from the database
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action deletes the players from the database
 	 */
 	public function admin_delete($player_ids)
 	{
@@ -301,11 +310,13 @@ class GamePlayer
 
 
 	/** public function admin_add_admin
-	 *		Gives the given players admin status
+	 *        Gives the given players admin status
 	 *
 	 * @param mixed csv or array of user ids
-	 * @action gives the given players admin status
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action gives the given players admin status
 	 */
 	public function admin_add_admin($user_ids)
 	{
@@ -326,16 +337,18 @@ class GamePlayer
 			$user_ids[] = (int) $this->_mysql->fetch_value($query);
 		}
 
-		$this->_mysql->insert(self::EXTEND_TABLE, array('is_admin' => 1), " WHERE player_id IN (".implode(',', $user_ids).") ");
+		$this->_mysql->insert(self::EXTEND_TABLE, ['is_admin' => 1], " WHERE player_id IN (".implode(',', $user_ids).") ");
 	}
 
 
 	/** public function admin_remove_admin
-	 *		Removes admin status from the given players
+	 *        Removes admin status from the given players
 	 *
 	 * @param mixed csv or array of user ids
-	 * @action removes the given players admin status
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action removes the given players admin status
 	 */
 	public function admin_remove_admin($user_ids)
 	{
@@ -360,16 +373,17 @@ class GamePlayer
 			}
 		}
 
-		$this->_mysql->insert(self::EXTEND_TABLE, array('is_admin' => 0), " WHERE player_id IN (".implode(',', $user_ids).") ");
+		$this->_mysql->insert(self::EXTEND_TABLE, ['is_admin' => 0], " WHERE player_id IN (".implode(',', $user_ids).") ");
 	}
 
 
 	/** public function save
-	 *		Saves all changed data to the database
+	 *        Saves all changed data to the database
 	 *
-	 * @param void
-	 * @action saves the player data
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action saves the player data
 	 */
 	public function save( )
 	{
@@ -409,13 +423,13 @@ class GamePlayer
 
 
 	/** protected function _pull
-	 *		Pulls all game player data from the database
-	 *		as well as the parent's data
+	 *        Pulls all game player data from the database
+	 *        as well as the parent's data
 	 *
-	 * @param void
+	 * @return void
+	 * @throws MySQLException
 	 * @action pulls the player data
 	 * @action pulls the game player data
-	 * @return void
 	 */
 	protected function _pull( )
 	{
@@ -462,15 +476,16 @@ return false;
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 	/** static public function get_list
-	 *		Returns a list array of all game players
-	 *		in the database
-	 *		This function supercedes the parent's function and
-	 *		just grabs the whole lot in one query
+	 *        Returns a list array of all game players
+	 *        in the database
+	 *        This function supersedes the parent's function and
+	 *        just grabs the whole lot in one query
 	 *
 	 * @param bool restrict to approved players
 	 * @return array game player list (or bool false on failure)
+	 * @throws MySQLException
 	 */
-	static public function get_list($only_approved = false)
+	public static function get_list($only_approved = false)
 	{
 		$Mysql = Mysql::get_instance( );
 
@@ -493,13 +508,13 @@ return false;
 
 
 	/** static public function get_count
-	 *		Returns a count of all game players
-	 *		in the database
+	 *        Returns a count of all game players
+	 *        in the database
 	 *
-	 * @param void
 	 * @return int game player count
+	 * @throws MySQLException
 	 */
-	static public function get_count( )
+	public static function get_count( )
 	{
 		$Mysql = Mysql::get_instance( );
 
@@ -518,13 +533,13 @@ return false;
 
 
 	/** static public function get_maxed
-	 *		Returns an array of all player ids
-	 *		who have reached their max games count
+	 *        Returns an array of all player IDs
+	 *        who have reached their max games count
 	 *
-	 * @param void
-	 * @return array of int player ids
+	 * @return array of int player IDs
+	 * @throws MySQLException
 	 */
-	static public function get_maxed( )
+	public static function get_maxed( )
 	{
 		$Mysql = Mysql::get_instance( );
 
@@ -542,7 +557,7 @@ return false;
 		";
 		$maxed_players = $Mysql->fetch_array($query);
 
-		$player_ids = array( );
+		$player_ids = [];
 		foreach ($maxed_players as $data) {
 			if ($data['game_count'] >= $data['max_games']) {
 				$player_ids[] = $data['player_id'];
@@ -554,12 +569,14 @@ return false;
 
 
 	/** static public function delete_inactive
-	 *		Deletes the inactive users from the database
+	 *        Deletes the inactive users from the database
 	 *
 	 * @param int age in days
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
 	 */
-	static public function delete_inactive($age)
+	public static function delete_inactive($age)
 	{
 		call(__METHOD__);
 
@@ -571,7 +588,7 @@ return false;
 			return false;
 		}
 
-		$exception_ids = array( );
+		$exception_ids = [];
 
 		// make sure the 'unused' player is not an admin
 		$query = "

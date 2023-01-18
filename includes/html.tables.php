@@ -24,7 +24,7 @@
 
 	there are two special cases for the format array
 		- if 'Header Text' contains 'SPECIAL_CLASS', then the second row contains a
-	snippit of code that should eval to true or false, this snippit of code can contain
+	snippet of code that should eval to true or false, this snippet of code can contain
 	anything that is allowed in the 'column data' field above (but does not need the leading ###
 	as it will always be eval'd).  if the code evals to true, the tr tag gets the class name contained
 	in the third array element, and if false, gets the class name contained in the fourth element
@@ -39,25 +39,25 @@
 
 		$table_data = array(
 			0 => array(
-				'field_name1' => 'field data' ,
-				'field_name2' => 'other field data' ,
-			) ,
+				'field_name1' => 'field data',
+				'field_name2' => 'other field data',
+			),
 			1 => array(
-				'field_name1' => 'second row field data' ,
-				'field_name2' => 'second row other field data' ,
-			) ,
+				'field_name1' => 'second row field data',
+				'field_name2' => 'second row other field data',
+			),
 		);
 
 	an example of the format array:
 
 		$table_format = array(
-			array('SPECIAL_CLASS', 'eval [[[field_name]]] code to bool', 'true_class', 'false_class') , // optional
-			array('SPECIAL_CLASS', 'eval [[[field_name]]] code to bool', 'other_true_class', 'other_false_class') , // optional
-			array('SPECIAL_HTML', 'eval [[[field_name]]] code to bool', 'id="true_html"', 'id="false_html"') , // optional
+			array('SPECIAL_CLASS', 'eval [[[field_name]]] code to bool', 'true_class', 'false_class'), // optional
+			array('SPECIAL_CLASS', 'eval [[[field_name]]] code to bool', 'other_true_class', 'other_false_class'), // optional
+			array('SPECIAL_HTML', 'eval [[[field_name]]] code to bool', 'id="true_html"', 'id="false_html"'), // optional
 
-			array('Header Text', 'field_name', 'sort_type', 'extra_html', 'count_field_name') ,
-			array('Header Text', 'contents [[[field_name]]] contents') ,
-			array('Header Text', '###code to [[[eval]]]') ,
+			array('Header Text', 'field_name', 'sort_type', 'extra_html', 'count_field_name'),
+			array('Header Text', 'contents [[[field_name]]] contents'),
+			array('Header Text', '###code to [[[eval]]]'),
 		);
 
 	the count_field_name is for columns that may have other data included, we can still get a total out of it
@@ -93,7 +93,7 @@ define('FALS', 3);
 // init_sort_column is an array of the format col => dir where dir is 0 for ASC and 1 for DESC
 function get_table($table_format, $table_data, $meta = null)
 {
-	$meta_defaults = array(
+	$meta_defaults = [
 		'alt_class' => 'alt',
 		'caption' => '',
 		'class' => 'datatable',
@@ -102,7 +102,7 @@ function get_table($table_format, $table_data, $meta = null)
 		'no_data' => 'There is no data',
 		'sortable' => false,
 		'totals' => false,
-	);
+	];
 
 	$opts = array_merge($meta_defaults, $meta);
 
@@ -117,17 +117,23 @@ function get_table($table_format, $table_data, $meta = null)
 			<thead>
 			<tr>';
 
-	$total_cols = array( );
+	$total_cols = [];
 	foreach ($table_format as $col) {
 		// test for SPECIAL data first
-		if ('SPECIAL_' == substr($col[TYPE], 0, 8)) {
+		if ( ! is_array($col[TYPE]) && ('SPECIAL_' == substr($col[TYPE], 0, 8))) {
 			${$col[TYPE]}[] = $col; // will be named either SPECIAL_CLASS or SPECIAL_HTML
 		}
 		else {
 			$sort_types[] = (isset($col[SORT])) ? $col[SORT] : null;
 
-			$headhtml .= '
+			if ( ! is_array($col[HEADER])) {
+				$headhtml .= '
 				<th>'.$col[HEADER].'</th>';
+			}
+			else {
+				$headhtml .= '
+				<th title="'.$col[HEADER][1].'">'.$col[HEADER][0].'</th>';
+			}
 
 			// do some stuff for the totals row
 			if ($opts['totals'] && isset($col[TOTAL])) {
@@ -212,7 +218,7 @@ function get_table($table_format, $table_data, $meta = null)
 			}
 		}
 
-		if (0 != ($i % 2) && ! empty($opts['alt_class'])) {
+		if (0 == ($i % 2) && ! empty($opts['alt_class'])) {
 			$classes[] = $opts['alt_class'];
 		}
 
@@ -227,7 +233,7 @@ function get_table($table_format, $table_data, $meta = null)
 				continue;
 			}
 
-			if ('SPECIAL_' == substr($col[TYPE], 0, 8)) {
+			if ( ! is_array($col[TYPE]) && ('SPECIAL_' == substr($col[TYPE], 0, 8))) {
 				continue;
 			}
 
@@ -337,7 +343,7 @@ function print_table($table_format, $table_data, $meta = null) {
 }
 
 
-// sort_types can be a comma seperated list or an array of sort types
+// sort_types can be a comma separated list or an array of sort types
 function get_sort_script($table_id, $sort_types = '', $alt_class = 'alt', $init_sort_column = null)
 {
 	if ( ! is_array($init_sort_column) || (0 == count($init_sort_column))) {
@@ -481,8 +487,9 @@ if ( ! function_exists('ifemptyor')) {
 }
 
 
-if ( ! function_exists('ife')) {
-	function ife($param, $or) {
+if ( ! function_exists('ifenr')) {
+	// if-else non-reference
+	function ifenr($param, $or = null) {
 		if (empty($param)) {
 			return $or;
 		}

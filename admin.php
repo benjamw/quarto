@@ -3,7 +3,7 @@
 require_once 'includes/inc.global.php';
 
 // make sure we are an admin
-if ( ! isset($GLOBALS['Player']) || (true != $GLOBALS['Player']->is_admin)) {
+if ( ! isset($GLOBALS['Player']) || (true !== $GLOBALS['Player']->is_admin)) {
 	Flash::store('Nice try');
 }
 
@@ -39,7 +39,7 @@ if (isset($_POST['player_action'])) {
 				break;
 		}
 
-		Flash::store('Admin Update Successfull', true); // redirect kills form resubmission
+		Flash::store('Admin Update Successful', true); // redirect kills form resubmission
 	}
 	catch (MyException $e) {
 		Flash::store('Admin Update FAILED !', true); // redirect kills form resubmission
@@ -67,7 +67,7 @@ if (isset($_POST['game_action'])) {
 				break;
 		}
 
-		Flash::store('Admin Update Successfull', true); // redirect kills form resubmission
+		Flash::store('Admin Update Successful', true); // redirect kills form resubmission
 	}
 	catch (MyException $e) {
 		Flash::store('Admin Update FAILED !', true); // redirect kills form resubmission
@@ -85,7 +85,7 @@ if (isset($_POST['submit'])) {
 
 		Settings::write_all($POST);
 
-		Flash::store('Admin Update Successfull', true); // redirect kills form resubmission
+		Flash::store('Admin Update Successful', true); // redirect kills form resubmission
 	}
 	catch (MyException $e) {
 		Flash::store('Admin Update FAILED !', true); // redirect kills form resubmission
@@ -97,44 +97,51 @@ $meta['head_data'] = '
 	<script type="text/javascript" src="scripts/admin.js"></script>
 ';
 
-$hints = array(
-	'Here you can administrate your '.GAME_NAME.' installation.' ,
-	'Click anywhere on a row to mark that row for action.' ,
-);
+$hints = [
+	'Here you can administrate your '.GAME_NAME.' installation.',
+	'Click anywhere on a row to mark that row for action.',
+];
 
 $contents = '';
 
-// grab the lists
+// get the players
 $player_list = GamePlayer::get_list( );
-$game_list = Game::get_list( );
 
 // go through the player list and remove the root admin and ourselves
 foreach ($player_list as $key => $player) {
 	if ($GLOBALS['_ROOT_ADMIN'] == $player['username']) {
 		unset($player_list[$key]);
+		continue;
 	}
 
 	if ($_SESSION['player_id'] == $player['player_id']) {
 		unset($player_list[$key]);
+		continue;
 	}
+
+	list($player['games'], $player['turn']) = Game::get_my_count($player['player_id']);
+
+	$player['played'] = $player['wins'] + $player['draws'] + $player['losses'];
+
+	$player_list[$key] = $player;
 }
 
-$table_meta = array(
-	'sortable' => true ,
-	'no_data' => '<p>There are no players to show</p><!-- NO_PLAYERS -->' ,
-	'caption' => 'Players' ,
-);
-$table_format = array(
-	array('ID', 'player_id') ,
-	array('Player', 'username') ,
-	array('First Name', 'first_name') ,
-	array('Last Name', 'last_name') ,
-	array('Email', 'email') ,
-	array('Admin', '###(([[[full_admin]]] | [[[half_admin]]]) ? \'<span class="notice">Yes</span>\' : \'No\')') ,
-	array('Approved', '###(([[[is_approved]]]) ? \'Yes\' : \'<span class="notice">No</span>\')') ,
-	array('Last Online', '###date(Settings::read(\'long_date\'), strtotime(\'[[[last_online]]]\'))', null, ' class="date"') ,
-	array('<input type="checkbox" id="player_all" />', '<input type="checkbox" name="ids[]" value="[[[player_id]]]" class="player_box" />', 'false', 'class="edit"') ,
-);
+$table_meta = [
+	'sortable' => true,
+	'no_data' => '<p>There are no players to show</p><!-- NO_PLAYERS -->',
+	'caption' => 'Players',
+];
+$table_format = [
+	['ID', 'player_id'],
+	['Player', 'username'],
+	['First Name', 'first_name'],
+	['Last Name', 'last_name'],
+	['Email', 'email'],
+	['Admin', '###(([[[full_admin]]] | [[[half_admin]]]) ? \'<span class="notice">Yes</span>\' : \'No\')'],
+	['Approved', '###(([[[is_approved]]]) ? \'Yes\' : \'<span class="notice">No</span>\')'],
+	['Last Online', '###date(Settings::read(\'long_date\'), strtotime(\'[[[last_online]]]\'))', null, ' class="date"'],
+	['<input type="checkbox" id="player_all" />', '<input type="checkbox" name="ids[]" value="[[[player_id]]]" class="player_box" />', 'false', 'class="edit"'],
+];
 $table = get_table($table_format, $player_list, $table_meta);
 
 if (false === strpos($table, 'NO_PLAYERS')) {
@@ -156,20 +163,23 @@ else {
 	$contents = $table;
 }
 
-$table_meta = array(
-	'sortable' => true ,
-	'no_data' => '<p>There are no games to show</p><!-- NO_GAMES -->' ,
-	'caption' => 'Games' ,
-);
-$table_format = array(
-	array('ID', 'game_id') ,
-	array('Player #1', 'white') ,
-	array('Player #2', 'black') ,
-	array('State', '###(([[[paused]]]) ? \'<span class="notice">Paused</span>\' : \'[[[state]]]\')') ,
-	array('Created', '###date(Settings::read(\'long_date\'), strtotime(\'[[[create_date]]]\'))', null, ' class="date"') ,
-	array('Last Move', '###date(Settings::read(\'long_date\'), strtotime(\'[[[last_move]]]\'))', null, ' class="date"') ,
-	array('<input type="checkbox" id="game_all" />', '<input type="checkbox" name="ids[]" value="[[[game_id]]]" class="game_box" />', 'false', 'class="edit"') ,
-);
+// get the games
+$game_list = Game::get_list( );
+
+$table_meta = [
+	'sortable' => true,
+	'no_data' => '<p>There are no games to show</p><!-- NO_GAMES -->',
+	'caption' => 'Games',
+];
+$table_format = [
+	['ID', 'game_id'],
+	['Player #1', 'white'],
+	['Player #2', 'black'],
+	['State', '###(([[[paused]]]) ? \'<span class="notice">Paused</span>\' : \'[[[state]]]\')'],
+	['Created', '###date(Settings::read(\'long_date\'), strtotime(\'[[[create_date]]]\'))', null, ' class="date"'],
+	['Last Move', '###date(Settings::read(\'long_date\'), strtotime(\'[[[last_move]]]\'))', null, ' class="date"'],
+	['<input type="checkbox" id="game_all" />', '<input type="checkbox" name="ids[]" value="[[[game_id]]]" class="game_box" />', 'false', 'class="edit"'],
+];
 $table = get_table($table_format, $game_list, $table_meta);
 
 if (false === strpos($table, 'NO_GAMES')) {
@@ -222,5 +232,6 @@ $contents .= $form;
 
 echo get_header($meta);
 echo get_item($contents, $hints, $meta['title']);
+call($GLOBALS);
 echo get_footer( );
 

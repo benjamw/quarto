@@ -104,7 +104,7 @@ class MyException
 			fclose($fp);
 		}
 
-		call($str);
+		call($str, $bypass = false, $show_from = true, $new_window = false, $error = true);
 	}
 
 }

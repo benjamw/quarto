@@ -39,7 +39,7 @@ class Settings
 	 *
 	 * @param array
 	 */
-	protected $_settings = array( );
+	protected $_settings = [];
 
 
 	/** protected property _notes
@@ -48,7 +48,7 @@ class Settings
 	 *
 	 * @param array
 	 */
-	protected $_notes = array( );
+	protected $_notes = [];
 
 
 	/** protected property _delete_missing
@@ -72,9 +72,9 @@ class Settings
 	/** static private property _instance
 	 *		Holds the instance of this object
 	 *
-	 * @var Flash object
+	 * @var Settings object
 	 */
-	static private $_instance;
+	private static $_instance;
 
 
 	/** protected property _mysql
@@ -91,12 +91,11 @@ class Settings
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 	/** protected function __construct
-	 *		Class constructor
+	 *        Class constructor
 	 *
-	 * @param void
+	 * @throws MySQLException
 	 * @action instantiates object
 	 * @action pulls settings from settings table
-	 * @return void
 	 */
 	protected function __construct( )
 	{
@@ -122,29 +121,35 @@ class Settings
 		// BUT... only if PHP didn't die because of an error
 		$error = error_get_last( );
 
-		if (0 == ((E_ERROR | E_WARNING | E_PARSE) & $error['type'])) {
+        if (null === $error) {
+            return;
+        }
+
+		if (0 === ((E_ERROR | E_WARNING | E_PARSE) & $error['type'])) {
 			try {
 				$this->_save( );
 			}
-			catch (MyException $e) {
+			catch (MyException | MySQLException $e) {
 				// do nothing, it will be logged
 			}
-		}
+        }
 	}
 
 
 	/** public function __get
-	 *		Class getter
-	 *		Returns the requested property if the
-	 *		requested property is not _private
+	 *        Class getter
+	 *        Returns the requested property if the
+	 *        requested property is not _private
 	 *
-	 * @param string property name
+	 * @param string $property property name
+	 *
 	 * @return mixed property value
+	 * @throws MyException
 	 */
 	public function __get($property)
 	{
 		if ( ! isset($this->_settings[$property]) && ! property_exists($this, $property)) {
-			throw new MyException(__METHOD__.': Trying to access non-existant property ('.$property.')', 2);
+			throw new MyException(__METHOD__.': Trying to access non-existent property ('.$property.')', 2);
 		}
 
 		if ('_' === $property[0]) {
@@ -161,14 +166,15 @@ class Settings
 
 
 	/** public function __set
-	 *		Class setter
-	 *		Sets the requested property if the
-	 *		requested property is not _private
+	 *        Class setter
+	 *        Sets the requested property if the
+	 *        requested property is not _private
 	 *
-	 * @param string property name
-	 * @param mixed property value
-	 * @action optional validation
+	 * @param $property
+	 * @param $value
 	 * @return void
+	 * @throws MyException
+	 * @action optional validation
 	 */
 	public function __set($property, $value)
 	{
@@ -186,11 +192,11 @@ class Settings
 
 
 	/** protected function _pull
-	 *		Pulls all settings data from the database
+	 *        Pulls all settings data from the database
 	 *
-	 * @param void
-	 * @action pulls the settings data
 	 * @return void
+	 * @throws MySQLException
+	 * @action pulls the settings data
 	 */
 	protected function _pull( )
 	{
@@ -205,7 +211,7 @@ class Settings
 			die('Settings were not pulled properly');
 		}
 
-		$this->_settings = array( );
+		$this->_settings = [];
 		foreach ((array) $results as $result) {
 			$this->_settings[$result['setting']] = $result['value'];
 			$this->_notes[$result['setting']] = $result['notes'];
@@ -214,12 +220,12 @@ class Settings
 
 
 	/** protected function _save
-	 *		Saves all settings data to the database
-	 *		if the settings are different
+	 *        Saves all settings data to the database
+	 *        if the settings are different
 	 *
-	 * @param void
-	 * @action saves the settings data
 	 * @return void
+	 * @throws MySQLException
+	 * @action saves the settings data
 	 */
 	protected function _save( )
 	{
@@ -232,7 +238,7 @@ class Settings
 		";
 		$results = $this->_mysql->fetch_array($query);
 
-		$data = array( );
+		$data = [];
 		$settings = $this->_settings;
 		foreach ($results as $result) {
 			if (isset($settings[$result['setting']])) {
@@ -295,7 +301,7 @@ class Settings
 	 * @action optionally creates the instance
 	 * @return Settings Object reference
 	 */
-	static public function get_instance( )
+	public static function get_instance( )
 	{
 		if (is_null(self::$_instance)) {
 			self::$_instance = new Settings( );
@@ -313,7 +319,7 @@ class Settings
 	 * @return mixed property value
 	 * @see __get
 	 */
-	static public function read($property)
+	public static function read($property)
 	{
 		return self::get_instance( )->$property;
 	}
@@ -325,7 +331,7 @@ class Settings
 	 * @param void
 	 * @return array property => value pairs
 	 */
-	static public function read_all( )
+	public static function read_all( )
 	{
 		$_this = self::get_instance( );
 		return $_this->get_settings( );
@@ -341,7 +347,7 @@ class Settings
 	 * @return void
 	 * @see __set
 	 */
-	static public function write($property, $value)
+	public static function write($property, $value)
 	{
 		self::get_instance( )->$property = $value;
 	}
@@ -354,7 +360,7 @@ class Settings
 	 * @return void
 	 * @see __set
 	 */
-	static public function write_all($settings)
+	public static function write_all($settings)
 	{
 		$_this = self::get_instance( );
 		$_this->put_settings($settings);
@@ -367,7 +373,7 @@ class Settings
 	 * @param void
 	 * @return array settings notes
 	 */
-	static public function read_setting_notes( )
+	public static function read_setting_notes( )
 	{
 		$_this = self::get_instance( );
 		return $_this->_notes;
@@ -375,12 +381,12 @@ class Settings
 
 
 	/** static public function test
-	 *		Test the MySQL connection
+	 *        Test the MySQL connection
 	 *
-	 * @param void
 	 * @return bool connection OK
+	 * @throws MySQLException
 	 */
-	static public function test( )
+	public static function test( )
 	{
 		if ( ! Mysql::test( )) {
 			return false;

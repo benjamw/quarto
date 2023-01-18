@@ -82,14 +82,16 @@ class Message
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 	/** public function __construct
-	 *		Class constructor
-	 *		Sets all outside data
+	 *        Class constructor
+	 *        Sets all outside data
 	 *
 	 * @param int user id
-	 * @param bool optional global flag, if set, user can send global messages
+	 * @param bool $global
+	 *
+	 * @throws MyException
+	 * @throws MySQLException
 	 * @action instantiates object
 	 * @action deletes expired messages and glue table entries from the database
-	 * @return void
 	 */
 	public function __construct($user_id, $global = false)
 	{
@@ -119,23 +121,24 @@ class Message
 		$message_ids = $this->_mysql->fetch_value_array($query);
 
 		if ($message_ids) {
-			$this->_mysql->multi_delete(array(self::GLUE_TABLE, self::MESSAGE_TABLE), " WHERE message_id IN (".implode(',', $message_ids).") ");
+			$this->_mysql->multi_delete([self::GLUE_TABLE, self::MESSAGE_TABLE], " WHERE message_id IN (".implode(',', $message_ids).") ");
 		}
 	}
 
 
 	/** public function __get
-	 *		Class getter
-	 *		Returns the requested property if the
-	 *		requested property is not _private
+	 *        Class getter
+	 *        Returns the requested property if the
+	 *        requested property is not _private
 	 *
 	 * @param string property name
 	 * @return mixed property value
+	 * @throws MyException
 	 */
 	public function __get($property)
 	{
 		if ( ! property_exists($this, $property)) {
-			throw new MyException(__METHOD__.': Trying to access non-existant property ('.$property.')', 2);
+			throw new MyException(__METHOD__.': Trying to access non-existent property ('.$property.')', 2);
 		}
 
 		if ('_' === $property[0]) {
@@ -147,19 +150,20 @@ class Message
 
 
 	/** public function __set
-	 *		Class setter
-	 *		Sets the requested property if the
-	 *		requested property is not _private
+	 *        Class setter
+	 *        Sets the requested property if the
+	 *        requested property is not _private
 	 *
-	 * @param string property name
-	 * @param mixed property value
-	 * @action optional validation
+	 * @param $property
+	 * @param $value
 	 * @return bool success
+	 * @throws MyException
+	 * @action optional validation
 	 */
 	public function __set($property, $value)
 	{
 		if ( ! property_exists($this, $property)) {
-			throw new MyException(__METHOD__.': Trying to access non-existant property ('.$property.')', 3);
+			throw new MyException(__METHOD__.': Trying to access non-existent property ('.$property.')', 3);
 		}
 
 		if ('_' === $property[0]) {
@@ -171,11 +175,11 @@ class Message
 
 
 	/** public function get_inbox_list
-	 *		Retrieves the list of messages in the inbox
-	 *		both unread and total
+	 *        Retrieves the list of messages in the inbox
+	 *        both unread and total
 	 *
-	 * @param void
 	 * @return array inbox data
+	 * @throws MySQLException
 	 */
 	public function get_inbox_list( )
 	{
@@ -211,10 +215,10 @@ class Message
 
 
 	/** public function get_outbox_list
-	 *		Retrieves the list of messages in the outbox
+	 *        Retrieves the list of messages in the outbox
 	 *
-	 * @param void
 	 * @return array outbox data
+	 * @throws MySQLException
 	 */
 	public function get_outbox_list( )
 	{
@@ -256,20 +260,20 @@ class Message
 				if ($recipients) {
 					foreach ($recipients as $recipient) {
 						if (0 == $recipient['to_id']) {
-							$row['recipient_data'][] = array(
-								'id' => $recipient['to_id'] ,
-								'name' => 'GLOBAL' ,
+							$row['recipient_data'][] = [
+								'id' => $recipient['to_id'],
+								'name' => 'GLOBAL',
 								'viewed' => true
-							);
+							];
 
 							break;
 						}
 
-						$row['recipient_data'][] = array(
-							'id' => $recipient['to_id'] ,
-							'name' => $GLOBALS['_PLAYERS'][$recipient['to_id']] ,
+						$row['recipient_data'][] = [
+							'id' => $recipient['to_id'],
+							'name' => $GLOBALS['_PLAYERS'][$recipient['to_id']],
 							'viewed' => ( ! is_null($recipient['view_date']))
-						);
+						];
 
 						$result[$key] = $row;
 					}
@@ -296,11 +300,11 @@ class Message
 
 
 	/** public function get_admin_list
-	 *		Retrieves the list of messages that were
-	 *		neither sent from or to the current admin
+	 *        Retrieves the list of messages that were
+	 *        neither sent from or to the current admin
 	 *
-	 * @param void
 	 * @return array message box data
+	 * @throws MySQLException
 	 */
 	public function get_admin_list( )
 	{
@@ -308,7 +312,7 @@ class Message
 
 		// NOTE: DO NOT LOOK FOR SEND DATE
 
-		// grab all entries that were neither sent nor recieved by the current admin
+		// grab all entries that were neither sent nor received by the current admin
 		$query = "
 			SELECT G.*
 				, IF('' <> M.subject, M.subject, '<No Subject>') AS subject
@@ -357,20 +361,20 @@ class Message
 				if ($recipients) {
 					foreach ($recipients as $recipient) {
 						if (0 == $recipient['to_id']) {
-							$row['recipient_data'][] = array(
-								'id' => $recipient['to_id'] ,
-								'name' => 'GLOBAL' ,
+							$row['recipient_data'][] = [
+								'id' => $recipient['to_id'],
+								'name' => 'GLOBAL',
 								'viewed' => true
-							);
+							];
 
 							break;
 						}
 
-						$row['recipient_data'][] = array(
-							'id' => $recipient['to_id'] ,
-							'name' => $GLOBALS['_PLAYERS'][$recipient['to_id']] ,
+						$row['recipient_data'][] = [
+							'id' => $recipient['to_id'],
+							'name' => $GLOBALS['_PLAYERS'][$recipient['to_id']],
 							'viewed' => ( ! is_null($recipient['view_date']))
-						);
+						];
 
 						$result[$key] = $row;
 					}
@@ -397,13 +401,15 @@ class Message
 
 
 	/** public function get_message
-	 *		Retrieves the message from the database
-	 *		but makes sure this user can see this message first
+	 *        Retrieves the message from the database
+	 *        but makes sure this user can see this message first
 	 *
 	 * @param int message id
-	 * @param bool is admin
-	 * @action tests to make sure this user can see this message
+	 * @param bool $admin
 	 * @return array message data
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action tests to make sure this user can see this message
 	 */
 	public function get_message($message_id, $admin = false)
 	{
@@ -533,11 +539,12 @@ class Message
 
 
 	/** public function set_message_read
-	 *		Sets the given messages as read by this user
+	 *        Sets the given messages as read by this user
 	 *
 	 * @param array or csv string message id(s)
-	 * @action sets read date for these messages
 	 * @return void
+	 * @throws MySQLException
+	 * @action sets read date for these messages
 	 */
 	public function set_message_read($message_ids)
 	{
@@ -556,17 +563,18 @@ class Message
 				WHERE to_id = '{$this->_user_id}'
 					AND message_id IN (".implode(',', $message_ids).")
 			";
-			$this->_mysql->insert(self::GLUE_TABLE, array('view_date ' => 'NOW( )'), $WHERE);
+			$this->_mysql->insert(self::GLUE_TABLE, ['view_date ' => 'NOW( )'], $WHERE);
 		}
 	}
 
 
 	/** public function set_message_unread
-	 *		Sets the given messages as unread by this user
+	 *        Sets the given messages as unread by this user
 	 *
 	 * @param array or csv string message id(s)
-	 * @action removes read date for these messages
 	 * @return void
+	 * @throws MySQLException
+	 * @action removes read date for these messages
 	 */
 	public function set_message_unread($message_ids)
 	{
@@ -579,17 +587,18 @@ class Message
 				WHERE to_id = '{$this->_user_id}'
 					AND message_id IN (".implode(',', $message_ids).")
 			";
-			$this->_mysql->insert(self::GLUE_TABLE, array('view_date' => NULL), $WHERE);
+			$this->_mysql->insert(self::GLUE_TABLE, ['view_date' => NULL], $WHERE);
 		}
 	}
 
 
 	/** public function delete_message
-	 *		Deletes the glue table entry for these messages for this user
+	 *        Deletes the glue table entry for these messages for this user
 	 *
 	 * @param array or csv string message id(s)
-	 * @action deletes the glue table entries
 	 * @return void
+	 * @throws MySQLException
+	 * @action deletes the glue table entries
 	 */
 	public function delete_message($message_ids)
 	{
@@ -612,7 +621,7 @@ class Message
 			 		if (strtotime($result['send_date']) > time( )) {
 			 			// the message has not been sent yet, delete them all
 			 			// (use actual deletions here)
-						$this->_mysql->multi_delete(array(self::GLUE_TABLE, self::MESSAGE_TABLE), " WHERE message_id = '{$message_id}' ");
+						$this->_mysql->multi_delete([self::GLUE_TABLE, self::MESSAGE_TABLE], " WHERE message_id = '{$message_id}' ");
 			 		}
 
 			 		// check for global message and delete if found
@@ -631,20 +640,22 @@ class Message
 			 		WHERE to_id = '{$this->_user_id}'
 			 			AND message_id = '{$message_id}'
 			 	";
-			 	$this->_mysql->insert(self::GLUE_TABLE, array('deleted' => 1), $WHERE);
+			 	$this->_mysql->insert(self::GLUE_TABLE, ['deleted' => 1], $WHERE);
 			}
 		}
 	}
 
 
 	/** static public function player_deleted
-	 *		Deletes the given players messages
+	 *        Deletes the given players messages
 	 *
 	 * @param mixed array or csv of player ids
-	 * @action deletes the players messages
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action deletes the players messages
 	 */
-	static public function player_deleted($player_ids)
+	public static function player_deleted($player_ids)
 	{
 		call(__METHOD__);
 
@@ -663,15 +674,17 @@ class Message
 
 
 	/** public function send_message
-	 *		Deletes the glue table entry for this message for this user
+	 *        Deletes the glue table entry for this message for this user
 	 *
-	 * @param string message subject
-	 * @param string message body
-	 * @param array (or csv string) message recipient user ids
-	 * @param int optional message send date as unix timestamp (default: now)
-	 * @param int optional message expire date as unix timestamp (default: never)
-	 * @action saves all relelvant data to database
+	 * @param      $subject
+	 * @param      $message
+	 * @param      $user_ids
+	 * @param bool $send_date
+	 * @param bool $expire_date
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action saves all relevant data to database
 	 */
 	public function send_message($subject, $message, $user_ids, $send_date = false, $expire_date = false)
 	{
@@ -693,7 +706,7 @@ class Message
 		}
 		else { // this is not an admin
 			// remove all instances of 0 from the id list
-			$user_ids = array_diff(array_unique($user_ids), array(0));
+			$user_ids = array_diff(array_unique($user_ids), [0]);
 		}
 
 		if ( ! is_array($user_ids) || (0 == count($user_ids))) {
@@ -705,7 +718,7 @@ class Message
 		$message = htmlentities($message, ENT_QUOTES, 'ISO-8859-1', false);
 
 		// save the message so we can grab the id
-		$message_id = $this->_mysql->insert(self::MESSAGE_TABLE, array('subject' => $subject, 'message' => $message));
+		$message_id = $this->_mysql->insert(self::MESSAGE_TABLE, ['subject' => $subject, 'message' => $message]);
 
 		// add ourselves to the recipient list and clean it up
 		$user_ids[] = $this->_user_id;
@@ -716,25 +729,25 @@ class Message
 		$expire_date = ( ! preg_match('%^(\\d+)/(\\d+)/(\\d+)$%', $expire_date)) ? NULL : preg_replace('%^(\\d+)/(\\d+)/(\\d+)$%', '$3-$1-$2', $expire_date);
 
 		foreach($user_ids as $user_id) {
-			$data = array(
+			$data = [
 				'message_id' => $message_id,
 				'from_id' => $this->_user_id,
 				'to_id' => $user_id,
 				'send_date' => $send_date,
 				'expire_date' => $expire_date,
-			);
+			];
 			$this->_mysql->insert(self::GLUE_TABLE, $data);
 		}
 	}
 
 
 	/** public function grab_global_messages
-	 *		Searches the glue table for global messages and copies
-	 *		those entries to this user
+	 *        Searches the glue table for global messages and copies
+	 *        those entries to this user
 	 *
-	 * @param void
-	 * @action copies global messages to this users inbox
 	 * @return void
+	 * @throws MySQLException
+	 * @action copies global messages to this users inbox
 	 */
 	public function grab_global_messages( )
 	{
@@ -763,14 +776,15 @@ class Message
 
 
 	/** protected function _get_message_data
-	 *		Retrieves the message from the database for sending
-	 *		but makes sure this user can see this message first
-	 *		and then appends data to the message so it can be sent
+	 *        Retrieves the message from the database for sending
+	 *        but makes sure this user can see this message first
+	 *        and then appends data to the message so it can be sent
 	 *
 	 * @param int message id
+	 * @return array [subject, message, to]
+	 * @throws MyException
 	 * @action tests to make sure this user can see this message
 	 * @action appends data to the subject and message so it can be sent
-	 * @return array [subject, message, to]
 	 */
 	protected function _get_message_data($message_id)
 	{
@@ -794,13 +808,14 @@ class Message
 
 
 	/** static public function get_count
-	 *		Grab the inbox count of new and total messages
-	 *		for the given player
+	 *        Grab the inbox count of new and total messages
+	 *        for the given player
 	 *
 	 * @param int player id
 	 * @return array (int total messages, int new messages)
+	 * @throws MySQLException
 	 */
-	static public function get_count($player_id)
+	public static function get_count($player_id)
 	{
 		call(__METHOD__);
 
@@ -824,17 +839,18 @@ class Message
 		";
 		$new_msgs = $Mysql->fetch_value($query);
 
-		return array($msgs, $new_msgs);
+		return [$msgs, $new_msgs];
 	}
 
 
 	/** static public function check_new
-	 *		Checks if the given player has any new messages
+	 *        Checks if the given player has any new messages
 	 *
 	 * @param int player id
 	 * @return number of new messages
+	 * @throws MySQLException
 	 */
-	static public function check_new($player_id)
+	public static function check_new($player_id)
 	{
 		call(__METHOD__);
 

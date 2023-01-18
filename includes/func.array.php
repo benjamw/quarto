@@ -16,17 +16,20 @@
  */
 function array_trim( & $array, $type = null)
 {
-	$types = array(
-		'int' , 'integer' ,
-		'bool' , 'boolean' ,
-		'float' , 'double' , 'real' ,
-		'string' ,
-		'array' ,
-		'object' ,
-	);
+	$types = [
+		'int', 'integer',
+		'bool', 'boolean',
+		'float', 'double',
+		'string',
+		'array',
+		'object',
+	];
 
-	if ( ! $array) {
-		$array = array( );
+	// if a non-empty string value comes through, don't erase it
+	// this is specifically for '0', but may work for others
+	$is_non_empty_string = (is_string($array) && strlen(trim($array)));
+	if ( ! $array && ! $is_non_empty_string) {
+		$array = [];
 	}
 
 	if ( ! in_array($type, $types)) {
@@ -38,42 +41,47 @@ function array_trim( & $array, $type = null)
 	}
 
 	if ( ! is_null($type)) {
-		array_walk_recursive($array, create_function('&$v', '$v = ('.$type.') trim($v);'));
+		array_walk_recursive($array, function (&$v) use ($type) {
+			$v = trim($v);
+			$v = settype($v, $type);
+		});
 	}
 	else {
-		array_walk_recursive($array, create_function('&$v', '$v = trim($v);'));
+		array_walk_recursive($array, fn (&$v) => $v = trim($v) );
 	}
 
 	return $array; // returns by reference as well
 }
 function arrayTrim( & $array, $type = null) { return array_trim($array, $type); }
 
-
 /** function array_clean [arrayClean]
- *		Strips out the unnecessary bits from an array
- *		so it can be input into a database, or to just
- *		generally clean an array of fluff
+ *        Strips out the unnecessary bits from an array
+ *        so it can be input into a database, or to just
+ *        generally clean an array of fluff
  *
- * @param array data array to be cleaned
- * @param mixed csv or array of allowed keys
- * @param mixed optional csv or array of required keys
+ * @param       $array
+ * @param       $keys
+ * @param array $reqd
+ *
  * @return array
+ * @throws MyException
  */
-function array_clean($array, $keys, $reqd = array( ))
+function array_clean($array, $keys, $reqd = [])
 {
 	if ( ! is_array($array)) {
-		return array( );
+		return [];
 	}
 
 	array_trim($keys);
-
-	if (0 == count($keys)) {
-		throw new MyException(__FUNCTION__.': No keys given');
-	}
-
 	array_trim($reqd);
 
-	$return = array( );
+	$keys = array_unique(array_merge($keys, $reqd));
+
+	if (empty($keys)) {
+		return [];
+	}
+
+	$return = [];
 	foreach ($keys as $key) {
 		if (in_array($key, $reqd) && (empty($array[$key]))) {
 			throw new MyException(__FUNCTION__.': Required element ('.$key.') missing');
@@ -86,17 +94,18 @@ function array_clean($array, $keys, $reqd = array( ))
 
 	return $return;
 }
-function arrayClean($array, $keys, $reqd = array( )) { return array_clean($array, $keys, $reqd); }
-
+function arrayClean($array, $keys, $reqd = []) { return array_clean($array, $keys, $reqd);
+}
 
 /** function array_transpose [arrayTranspose]
- *		Transposes a 2-D array
- *		array[i][j] becomes array[j][i]
+ *        Transposes a 2-D array
+ *        array[i][j] becomes array[j][i]
  *
- *		Not to be confused with the PHP function array_flip
+ *        Not to be confused with the PHP function array_flip
  *
  * @param array
  * @return mixed array (or bool false on failure)
+ * @throws MyException
  */
 function array_transpose($array)
 {
@@ -104,7 +113,7 @@ function array_transpose($array)
 		throw new MyException(__FUNCTION__.': Data given was not an array');
 	}
 
-	$return = array( );
+	$return = [];
 	foreach ($array as $key1 => $value1) {
 		if ( ! is_array($value1)) {
 			continue;
@@ -121,29 +130,30 @@ function array_transpose($array)
 
 	return $return;
 }
-function arrayTranspose($array) { return array_transpose($array); }
-
+function arrayTranspose($array) { return array_transpose($array);
+}
 
 /** function array_shrink [arrayShrink]
- *		Returns all elements with second level key $key
- *		from a 2-D array
- *		e.g.-
- *			$array[0]['foo'] = 'bar';
- *			$array[1]['foo'] = 'baz';
+ *        Returns all elements with second level key $key
+ *        from a 2-D array
+ *        e.g.-
+ *            $array[0]['foo'] = 'bar';
+ *            $array[1]['foo'] = 'baz';
  *
- *		array_shrink($array, 'foo') returns
- *			array(
- *				[0] = 'bar'
- *				[1] = 'baz'
- *			)
+ *        array_shrink($array, 'foo') returns
+ *            array(
+ *                [0] = 'bar'
+ *                [1] = 'baz'
+ *            )
  *
- *		This function returns the input if it is not
- *		an array, or returns false if the key is not
- *		present in the array
+ *        This function returns the input if it is not
+ *        an array, or returns false if the key is not
+ *        present in the array
  *
- * @param array data array
- * @param mixed second level key
+ * @param $array
+ * @param $key
  * @return mixed array (or original input or bool false on failure)
+ * @throws MyException
  */
 function array_shrink($array, $key)
 {
@@ -200,13 +210,17 @@ function arraySumField($array, $key) { return array_sum_field($array, $key); }
  *		extra divider between key-value pairs
  *		Can be used to create URL GET strings from arrays
  *
- * @param string seperator between elements (for URL GET, use '&')
- * @param string divider between key-value pairs (for URL GET, use '=')
  * @param array
- * @param bool optional URL encode flag
+ * @param string optional separator between elements (for URL GET, use '&', default)
+ * @param string optional divider between key-value pairs (for URL GET, use '=', default)
+ * @param bitwise int optional URL encode flag
  * @return string
  */
-function implode_full($seperator, $divider, $array, $url = false)
+define('URL_ENCODE_NONE', 0);
+define('URL_ENCODE_KEY', 1);
+define('URL_ENCODE_VAL', 2);
+define('URL_ENCODE_FULL', 4);
+function implode_full($array, $separator = '&', $divider = '=', $url = URL_ENCODE_NONE)
 {
 	if ( ! is_array($array) || (0 == count($array))) {
 		return $array;
@@ -214,18 +228,26 @@ function implode_full($seperator, $divider, $array, $url = false)
 
 	$str = '';
 	foreach ($array as $key => $val) {
-		$str .= $key.$divider.$val.$seperator;
+		if (URL_ENCODE_KEY & $url) {
+			$key = urlencode($key);
+		}
+
+		if (URL_ENCODE_VAL & $url) {
+			$val = urlencode($val);
+		}
+
+		$str .= $key.$divider.$val.$separator;
 	}
 
-	$str = substr($str, 0, -(strlen($seperator)));
+	$str = substr($str, 0, -(strlen($separator)));
 
-	if ($url) {
-		$str = url_encode($str);
+	if (URL_ENCODE_FULL & $url) {
+		$str = urlencode($str);
 	}
 
 	return $str;
 }
-function implodeFull($seperator, $divider, $array, $url = false) { return implode_full($seperator, $divider, $array, $url); }
+function implodeFull($array, $separator = '&', $divider = '=', $url = URL_ENCODE_NONE) { return implode_full($array, $separator, $divider, $url); }
 
 
 /** function explode_full [explodeFull]
@@ -233,16 +255,15 @@ function implodeFull($seperator, $divider, $array, $url = false) { return implod
  *		extra divider between key-value pairs
  *		Can be used to create arrays from URL GET strings
  *
- * @param string seperator between elements (for URL GET, use '&')
- * @param string divider between key-value pairs (for URL GET, use '=')
  * @param string
- * @param bool optional URL encode flag
+ * @param string optional separator between elements (for URL GET, use '&', default)
+ * @param string optional divider between key-value pairs (for URL GET, use '=', default)
  * @return array
  */
-function explode_full($seperator, $divider, $string, $url = false)
+function explode_full($string, $separator = '&', $divider = '=')
 {
-	// explode the string about the seperator
-	$first = explode($seperator, $string);
+	// explode the string about the separator
+	$first = explode($separator, $string);
 
 	// now go through each element in the first array and explode each about the divider
 	foreach ($first as $element) {
@@ -252,25 +273,23 @@ function explode_full($seperator, $divider, $string, $url = false)
 
 	return $array;
 }
-function explodeFull($seperator, $divider, $string, $url = false) { return explode_full($seperator, $divider, $string, $url); }
-
+function explodeFull($string, $separator = '&', $divider = '=') { return explode_full($string, $separator, $divider); }
 
 /** function kshuffle
- *		Exactly the same as shuffle except this function
- *		preserves the original keys of the array
+ *        Exactly the same as shuffle except this function
+ *        preserves the original keys of the array
  *
- * @param array the array to shuffle by reference
- * @return array
+ * @param array &$array the array to shuffle by reference
  */
-function kshuffle( & $array)
+function kshuffle(array & $array)
 {
-	uasort($array, create_function('$a,$b', 'rand(1, -1);'));
+	uasort($array, fn ($a, $b) => rand(1, -1) );
 }
 
 
 /** function array_merge_plus
  *		Exactly the same as array_merge except this function
- *		alows entry of non-arrays without throwing errors
+ *		allows entry of non-arrays without throwing errors
  *		If an empty argument is encountered, it removes it.
  *		If a non-empty, non-array value is encountered,
  *		it appends it to the array in the order received.
@@ -303,6 +322,7 @@ function array_merge_plus($array1) {
 	$eval_string = substr($eval_string, 0, -1).');';
 
 	$return = false;
+	/** @var array $return */
 	eval($eval_string);
 
 	return $return;
@@ -310,7 +330,7 @@ function array_merge_plus($array1) {
 
 
 function array_compare($array1, $array2) {
-	$diff = array(array( ), array( ));
+	$diff = [[], []];
 
 	// Left-to-right
 	foreach ($array1 as $key => $value) {
@@ -346,9 +366,44 @@ function array_compare($array1, $array2) {
 		if ( ! array_key_exists($key, $array1)) {
 			$diff[1][$key] = $value;
 		}
-		// No direct comparsion because matching keys were compared in the
+		// No direct comparison because matching keys were compared in the
 		// left-to-right loop earlier, recursively.
 	}
 
 	return $diff;
 }
+
+
+/** function array_filter_recursive
+ *
+ *		Exactly the same as array_filter except this function
+ *		filters within multi-dimensional arrays
+ *
+ * @param array
+ * @param string optional callback function name
+ * @param bool optional flag removal of empty arrays after filtering
+ * @return array merged array
+ */
+function array_filter_recursive($array, $callback = null, $remove_empty_arrays = false) {
+	foreach ($array as $key => & $value) { // mind the reference
+		if (is_array($value)) {
+			$value = array_filter_recursive($value, $callback);
+
+			if ($remove_empty_arrays && ! (bool) $value) {
+				unset($array[$key]);
+			}
+		}
+		else {
+			if ( ! is_null($callback) && ! $callback($value)) {
+				unset($array[$key]);
+			}
+			elseif ( ! (bool) $value) {
+				unset($array[$key]);
+			}
+		}
+	}
+	unset($value); // kill the reference
+
+	return $array;
+}
+

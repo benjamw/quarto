@@ -4,7 +4,7 @@ require_once 'includes/inc.global.php';
 
 // this has nothing to do with creating a game
 // but I'm running it here to prevent long load
-// times on other pages where it would be ran more often
+// times on other pages where it would be run more often
 GamePlayer::delete_inactive(Settings::read('expire_users'));
 Game::delete_inactive(Settings::read('expire_games'));
 Game::delete_finished(Settings::read('expire_finished_games'));
@@ -14,14 +14,14 @@ $Game = new Game( );
 if (isset($_POST['invite'])) {
 	// make sure this user is not full
 	if ($GLOBALS['Player']->max_games && ($GLOBALS['Player']->max_games <= $GLOBALS['Player']->current_games)) {
-		Flash::store('You have reached your maximum allowed games !');
+		Flash::store('You have reached your maximum allowed games !', false);
 	}
 
 	test_token( );
 
 	try {
 		$game_id = $Game->invite( );
-		Flash::store('Invitation Sent Successfully');
+		Flash::store('Invitation Sent Successfully', true);
 	}
 	catch (MyException $e) {
 		Flash::store('Invitation FAILED !', false);
@@ -88,15 +88,17 @@ $meta['head_data'] = '
 			float: left;
 		}
 	</style>
+';
+$meta['foot_data'] = '
 	<script type="text/javascript" src="scripts/invite.js"></script>
 	<link rel="stylesheet" type="text/css" media="screen" href="css/board.css" />
 ';
 
-$hints = array(
-	'Invite a player to a game by filling out your desired game options.' ,
-	'You can click the displayed piece to select it.' ,
-	'<span class="highlight">WARNING!</span><br />Games will be deleted after '.Settings::read('expire_games').' days of inactivity.' ,
-);
+$hints = [
+	'Invite a player to a game by filling out your desired game options.',
+	'You can click the displayed piece to select it.',
+	'<span class="highlight">WARNING!</span><br />Games will be deleted after '.Settings::read('expire_games').' days of inactivity.',
+];
 
 // make sure this user is not full
 $submit_button = '<div><input type="submit" name="invite" value="Send Invitation" /></div>';
@@ -106,7 +108,8 @@ if ($GLOBALS['Player']->max_games && ($GLOBALS['Player']->max_games <= $GLOBALS[
 }
 
 $contents = <<< EOF
-	<form method="post" action="{$_SERVER['REQUEST_URI']}"><div class="formdiv">
+	<form method="post" action="{$_SERVER['REQUEST_URI']}" id="send"><div class="formdiv">
+
 		<input type="hidden" name="token" value="{$_SESSION['token']}" />
 		<input type="hidden" name="player_id" value="{$_SESSION['player_id']}" />
 
@@ -137,7 +140,7 @@ EOF;
 // create our invitation tables
 $invites = Game::get_invites($_SESSION['player_id']);
 
-$in_vites = $out_vites = array( );
+$in_vites = $out_vites = [];
 if (is_array($invites)) {
 	foreach ($invites as $game) {
 		if ($game['invite']) {
@@ -150,36 +153,35 @@ if (is_array($invites)) {
 }
 
 $contents .= <<< EOT
-	<hr />
 	<form method="post" action="{$_SERVER['REQUEST_URI']}"><div class="formdiv" id="invites">
 EOT;
 
-$table_meta = array(
-	'sortable' => true ,
-	'no_data' => '<p>There are no invites to show</p>' ,
-	'caption' => 'Invitations Recieved' ,
-);
-$table_format = array(
-	array('ID', 'game_id') ,
-	array('Player #1', 'white') ,
-	array('Player #2', 'black') ,
-	array('Date Sent', '###date(Settings::read(\'long_date\'), strtotime(\'[[[last_move]]]\'))', null, ' class="date"') ,
-	array('Action', '<input type="button" id="accept-[[[game_id]]]" value="Accept" /><input type="button" id="decline-[[[game_id]]]" value="Decline" />', false) ,
-);
+$table_meta = [
+	'sortable' => true,
+	'no_data' => '<p>There are no received invites to show</p>',
+	'caption' => 'Invitations Received',
+];
+$table_format = [
+	['ID', 'game_id'],
+	['Player #1', 'white'],
+	['Player #2', 'black'],
+	['Date Sent', '###date(Settings::read(\'long_date\'), strtotime(\'[[[create_date]]]\'))', null, ' class="date"'],
+	['Action', '<input type="button" id="accept-[[[game_id]]]" value="Accept" /><input type="button" id="decline-[[[game_id]]]" value="Decline" />', false],
+];
 $contents .= get_table($table_format, $in_vites, $table_meta);
 
-$table_meta = array(
-	'sortable' => true ,
-	'no_data' => '<p>There are no invites to show</p>' ,
-	'caption' => 'Invitations Sent' ,
-);
-$table_format = array(
-	array('ID', 'game_id') ,
-	array('Player #1', 'white') ,
-	array('Player #2', 'black') ,
-	array('Date Sent', '###date(Settings::read(\'long_date\'), strtotime(\'[[[last_move]]]\'))', null, ' class="date"') ,
-	array('Action', '<input type="button" id="withdraw-[[[game_id]]]" value="Withdraw" />', false) ,
-);
+$table_meta = [
+	'sortable' => true,
+	'no_data' => '<p>There are no sent invites to show</p>',
+	'caption' => 'Invitations Sent',
+];
+$table_format = [
+	['ID', 'game_id'],
+	['Player #1', 'white'],
+	['Player #2', 'black'],
+	['Date Sent', '###date(Settings::read(\'long_date\'), strtotime(\'[[[create_date]]]\'))', null, ' class="date"'],
+	['Action', '<input type="button" id="withdraw-[[[game_id]]]" value="Withdraw" />', false],
+];
 $contents .= get_table($table_format, $out_vites, $table_meta);
 
 $contents .= <<< EOT
@@ -188,5 +190,6 @@ EOT;
 
 echo get_header($meta);
 echo get_item($contents, $hints, $meta['title']);
-echo get_footer( );
+call($GLOBALS);
+echo get_footer($meta);
 

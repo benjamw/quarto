@@ -82,13 +82,15 @@ class Chat
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 	/** public function __construct
-	 *		Class constructor
-	 *		Sets all outside data
+	 *        Class constructor
+	 *        Sets all outside data
 	 *
-	 * @param int user id
-	 * @param int game id
+	 * @param $user_id
+	 * @param $game_id
+	 *
+	 * @throws MyException
+	 * @throws MySQLException
 	 * @action instantiates object
-	 * @return void
 	 */
 	public function __construct($user_id, $game_id)
 	{
@@ -109,17 +111,18 @@ class Chat
 
 
 	/** public function __get
-	 *		Class getter
-	 *		Returns the requested property if the
-	 *		requested property is not _private
+	 *        Class getter
+	 *        Returns the requested property if the
+	 *        requested property is not _private
 	 *
 	 * @param string property name
 	 * @return mixed property value
+	 * @throws MyException
 	 */
 	public function __get($property)
 	{
 		if ( ! property_exists($this, $property)) {
-			throw new MyException(__METHOD__.': Trying to access non-existant property ('.$property.')', 2);
+			throw new MyException(__METHOD__.': Trying to access non-existent property ('.$property.')', 2);
 		}
 
 		if ('_' === $property[0]) {
@@ -131,19 +134,20 @@ class Chat
 
 
 	/** public function __set
-	 *		Class setter
-	 *		Sets the requested property if the
-	 *		requested property is not _private
+	 *        Class setter
+	 *        Sets the requested property if the
+	 *        requested property is not _private
 	 *
-	 * @param string property name
-	 * @param mixed property value
-	 * @action optional validation
+	 * @param $property
+	 * @param $value
 	 * @return bool success
+	 * @throws MyException
+	 * @action optional validation
 	 */
 	public function __set($property, $value)
 	{
 		if ( ! property_exists($this, $property)) {
-			throw new MyException(__METHOD__.': Trying to access non-existant property ('.$property.')', 3);
+			throw new MyException(__METHOD__.': Trying to access non-existent property ('.$property.')', 3);
 		}
 
 		if ('_' === $property[0]) {
@@ -155,10 +159,11 @@ class Chat
 
 
 	/** public function get_box_list
-	 *		Retrieves the list of chats in the box
+	 *        Retrieves the list of chats in the box
 	 *
-	 * @param int optional number of chats to retrieve (pulls most recent)
+	 * @param null $num
 	 * @return html list table
+	 * @throws MySQLException
 	 */
 	public function get_box_list($num = null)
 	{
@@ -189,12 +194,15 @@ class Chat
 
 
 	/** public function send_message
-	 *		Adds a message to the in-game chat
+	 *        Adds a message to the in-game chat
 	 *
 	 * @param string message
-	 * @param bool optional private message
-	 * @action saves all relelvant data to database
+	 * @param bool $private
+	 * @param bool $lobby
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action saves all relevant data to database
 	 */
 	public function send_message($message, $private = false, $lobby = false)
 	{
@@ -221,7 +229,7 @@ class Chat
 		}
 
 		// save the message
-		$this->_mysql->insert(self::CHAT_TABLE, array('message' => $message, 'private' => (int) $private, 'from_id' => $this->_user_id, 'game_id' => $this->_game_id));
+		$this->_mysql->insert(self::CHAT_TABLE, ['message' => $message, 'private' => (int) $private, 'from_id' => $this->_user_id, 'game_id' => $this->_game_id]);
 	}
 
 } // end of Chat class

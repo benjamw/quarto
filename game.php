@@ -48,12 +48,10 @@ $chat_html = '
 			<form action="'.$_SERVER['REQUEST_URI'].'" method="post"><div>
 				<input id="chat" type="text" name="chat" />
 				<label for="private" class="inline"><input type="checkbox" name="private" id="private" value="yes" /> Private</label>
-			</div></form>';
-
-if (is_array($chat_data)) {
-	$chat_html .= '
+			</div></form>
 			<dl id="chats">';
 
+if (is_array($chat_data)) {
 	foreach ($chat_data as $chat) {
 		if ('' == $chat['username']) {
 			$chat['username'] = '[deleted]';
@@ -73,12 +71,10 @@ if (is_array($chat_data)) {
 				<dt class="'.$color.'"><span>'.$chat['create_date'].'</span> '.$chat['username'].'</dt>
 				<dd'.($chat['private'] ? ' class="private"' : '').'>'.$chat['message'].'</dd>';
 	}
-
-	$chat_html .= '
-			</dl> <!-- #chats -->';
 }
 
 $chat_html .= '
+			</dl> <!-- #chats -->
 		</div> <!-- #chatbox -->';
 
 // hide the chat from non-players
@@ -111,15 +107,18 @@ if ($matching_methods) {
 $meta['title'] = $turn.' - '.$Game->name.' (#'.$_SESSION['game_id'].')';
 $meta['show_menu'] = false;
 $meta['head_data'] = '
-	<link rel="stylesheet" type="text/css" media="screen" href="css/board.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="css/game.css" />
 
-	<script type="text/javascript">//<![CDATA[
+	<script type="text/javascript">/*<![CDATA[*/
 		var state = "'.(( ! $Game->paused) ? strtolower($Game->state) : 'paused').'";
 		var last_move = '.$Game->last_move.';
 		var my_turn = '.(( ! $Game->get_my_turn( ) || $no_turn) ? 'false' : 'true').';
 		var move_history = '.json_encode($Game->get_history( )).';
 		var current_index = move_history.length - 1;
 	//]]></script>
+';
+
+$meta['foot_data'] = '
 	<script type="text/javascript" src="scripts/game.js"></script>
 ';
 
@@ -132,7 +131,7 @@ echo get_header($meta);
 				<li><a href="index.php<?php echo $GLOBALS['_?_DEBUG_QUERY']; ?>">Main Page</a></li>
 				<li><a href="game.php<?php echo $GLOBALS['_?_DEBUG_QUERY']; ?>">Reload Game Board</a></li>
 			</ul>
-			<h2>Game #<?php echo $_SESSION['game_id'].': '.$Game->name; ?> <?php echo $info_bar; ?></h2>
+			<h2>Game #<?php echo $_SESSION['game_id'].' vs '.htmlentities($Game->name, ENT_QUOTES, 'ISO-8859-1', false); ?> <?php echo $info_bar; ?></h2>
 
 			<?php if ('' != $win_text) { ?>
 			<div class="msg <?php echo $outcome; ?>"><?php echo $win_text; ?></div>
@@ -205,7 +204,7 @@ echo get_header($meta);
 
 					<ul>
 					<?php
-						$attributes = array('Color', 'Size', 'Fill', 'Shape');
+						$attributes = ['Color', 'Size', 'Fill', 'Shape'];
 
 						foreach ($outcome_data as $section => $matches) {
 							$match = str_pad(decbin($matches), 4, '0', STR_PAD_LEFT);
@@ -217,12 +216,12 @@ echo get_header($meta);
 							elseif (1 < strlen($section)) {
 								$desc = 'Diag';
 
-								if ( ! in_array($section[0], array('\\', '/'))) {
+								if ( ! in_array($section[0], ['\\', '/'])) {
 									$desc = 'Square';
 								}
 							}
 
-							$match_array = array( );
+							$match_array = [];
 							for ($i = 0; $i < 4; ++$i) {
 								if ($match[$i]) {
 									$match_array[] = $attributes[$i];
@@ -288,10 +287,11 @@ echo get_header($meta);
 					<input type="button" name="nudge" id="nudge" value="Nudge" />
 				<?php } ?>
 			</div></form>
-		</div>
+
+		</div> <!-- #contents -->
 
 <?php
 
 call($GLOBALS);
-echo get_footer( );
+echo get_footer($meta);
 

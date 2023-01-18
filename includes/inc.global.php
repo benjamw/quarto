@@ -8,7 +8,7 @@ ini_set('register_globals', 0); // you really should have this off anyways
 date_default_timezone_set('UTC');
 
 // deal with those lame magic quotes
-if (get_magic_quotes_gpc( )) {
+if (version_compare(phpversion(), '8.0.0', '<') && get_magic_quotes_gpc( )) {
 	function stripslashes_deep($value) {
 		$value = is_array($value)
 			? array_map('stripslashes_deep', $value)
@@ -29,7 +29,7 @@ if (get_magic_quotes_gpc( )) {
  * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 define('ROOT_DIR', dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR);
-define('INCLUDE_DIR', dirname(__FILE__).DIRECTORY_SEPARATOR);
+define('INCLUDE_DIR', ROOT_DIR.'includes'.DIRECTORY_SEPARATOR);
 define('CLASSES_DIR', ROOT_DIR.'classes'.DIRECTORY_SEPARATOR);
 define('GAMES_DIR', ROOT_DIR.'games'.DIRECTORY_SEPARATOR);
 define('LOG_DIR', ROOT_DIR.'logs'.DIRECTORY_SEPARATOR);
@@ -58,16 +58,16 @@ require_once INCLUDE_DIR.'html.tables.php';
 // OR YOU END UP WITH INCOMPLETE OBJECTS PULLED FROM SESSION
 spl_autoload_register('load_class');
 
+// set the proper timezone
+date_default_timezone_set($GLOBALS['_DEFAULT_TIMEZONE']);
+
 
 /**
  *		GLOBAL DATA
  * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-$GLOBALS['_&_DEBUG_QUERY'] = '';
-$GLOBALS['_?_DEBUG_QUERY'] = '';
-
 // make a list of all the color files available to use
-$GLOBALS['_COLORS'] = array( );
+$GLOBALS['_COLORS'] = [];
 
 $dh = opendir(realpath(dirname(__FILE__).'/../css'));
 while (false !== ($file = readdir($dh))) {
@@ -83,8 +83,8 @@ if (class_exists('Settings') && Settings::test( )) {
 }
 
 if ('' == $GLOBALS['_DEFAULT_COLOR']) {
-	if (in_array('blue_white', $GLOBALS['_COLORS'])) {
-		$GLOBALS['_DEFAULT_COLOR'] = 'blue_white';
+	if (in_array('red_black', $GLOBALS['_COLORS'])) {
+		$GLOBALS['_DEFAULT_COLOR'] = 'red_black';
 	}
 	elseif ($GLOBALS['_COLORS']) {
 		$GLOBALS['_DEFAULT_COLOR'] = $GLOBALS['_COLORS'][0];
@@ -108,7 +108,7 @@ session_start( );
 
 // make sure we don't cross site session steal in our own site
 if ( ! isset($_SESSION['PWD']) || (__FILE__ != $_SESSION['PWD'])) {
-	$_SESSION = array( );
+	$_SESSION = [];
 }
 $_SESSION['PWD'] = __FILE__;
 
@@ -116,7 +116,10 @@ $_SESSION['PWD'] = __FILE__;
 if ( ! isset($_SESSION['token'])) {
 	$_SESSION['token'] = md5(uniqid(rand( ), true));
 }
-call($_SESSION['token']);
+
+// set our DEBUG constant
+$GLOBALS['_&_DEBUG_QUERY'] = '';
+$GLOBALS['_?_DEBUG_QUERY'] = '';
 
 if ( ! defined('DEBUG')) {
 	if (test_debug( )) {
@@ -131,32 +134,31 @@ $GLOBALS['_LOGGING'] = DEBUG; // do not change, rather, change debug value
 
 if (Mysql::test( )) {
 	$Mysql = Mysql::get_instance( );
-	$Mysql->set_settings(array(
+	$Mysql->set_settings(
+		[
 		'log_path' => LOG_DIR,
 		'email_subject' => GAME_NAME.' Query Error',
-	));
+		]
+	);
 
 	if (class_exists('Settings') && Settings::test( )) {
-		$Mysql->set_settings(array(
+		$Mysql->set_settings(
+			[
 			'log_errors' => Settings::read('DB_error_log'),
 			'email_errors' => Settings::read('DB_error_email'),
 			'email_from' => Settings::read('from_email'),
 			'email_to' => Settings::read('to_email'),
-		));
+			]
+		);
 	}
 }
 
 if (defined('DEBUG') && DEBUG) {
 	ini_set('display_errors','On');
-	error_reporting(E_ALL | E_STRICT); // all errors, notices, and strict warnings
+	error_reporting(-1); // all errors, notices, and strict warnings
 	if (isset($Mysql)) {
 		$Mysql->set_error(3);
 	}
-}
-else { // do not edit the following
-#	ini_set('display_errors','Off');
-	error_reporting(E_ALL | E_STRICT);
-#	error_reporting(E_ALL & ~ E_NOTICE); // show errors, but not notices
 }
 
 // log the player in
@@ -167,6 +169,16 @@ if (( ! defined('LOGIN') || LOGIN) && isset($Mysql)) {
 
 	if (0 != $_SESSION['player_id']) {
 		$Message = new Message($_SESSION['player_id'], $GLOBALS['Player']->is_admin);
+	}
+
+	// set the default color for the player
+	if (('' != $GLOBALS['Player']->color) && (in_array($GLOBALS['Player']->color, $GLOBALS['_COLORS']))) {
+		$GLOBALS['_DEFAULT_COLOR'] = $GLOBALS['Player']->color;
+	}
+
+	// set the default timezone for the player
+	if ('' !== $GLOBALS['Player']->timezone) {
+		date_default_timezone_set($GLOBALS['Player']->timezone);
 	}
 }
 

@@ -63,11 +63,11 @@ class Game
 	 *
 	 * @var array
 	 */
-	static protected $_EXTRA_INFO_DEFAULTS = array(
+	protected static $_EXTRA_INFO_DEFAULTS = [
 			'small_square_matches' => false,
 			'small_square_torus' => false,
 			'diagonal_torus' => false,
-		);
+	];
 
 
 	/** public property id
@@ -175,13 +175,15 @@ class Game
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 	/** public function __construct
-	 *		Class constructor
-	 *		Sets all outside data
+	 *        Class constructor
+	 *        Sets all outside data
 	 *
 	 * @param int optional game id
-	 * @param Mysql optional object reference
+	 * @param Mysql|null $Mysql
+	 *
+	 * @throws MyException
+	 * @throws MySQLException
 	 * @action instantiates object
-	 * @return void
 	 */
 	public function __construct($id = 0, Mysql $Mysql = null)
 	{
@@ -233,12 +235,13 @@ class Game
 
 
 	/** public function __get
-	 *		Class getter
-	 *		Returns the requested property if the
-	 *		requested property is not _private
+	 *        Class getter
+	 *        Returns the requested property if the
+	 *        requested property is not _private
 	 *
 	 * @param string property name
 	 * @return mixed property value
+	 * @throws MyException
 	 */
 	public function __get($property)
 	{
@@ -284,7 +287,7 @@ class Game
 		}
 
 		if ( ! property_exists($this, $property)) {
-			throw new MyException(__METHOD__.': Trying to access non-existant property ('.$property.')', 2);
+			throw new MyException(__METHOD__.': Trying to access non-existent property ('.$property.')', 2);
 		}
 
 		if ('_' === $property[0]) {
@@ -296,14 +299,15 @@ class Game
 
 
 	/** public function __set
-	 *		Class setter
-	 *		Sets the requested property if the
-	 *		requested property is not _private
+	 *        Class setter
+	 *        Sets the requested property if the
+	 *        requested property is not _private
 	 *
-	 * @param string property name
-	 * @param mixed property value
-	 * @action optional validation
+	 * @param $property
+	 * @param $value
 	 * @return bool success
+	 * @throws MyException
+	 * @action optional validation
 	 */
 	public function __set($property, $value)
 	{
@@ -331,11 +335,12 @@ class Game
 
 
 	/** public function invite
-	 *		Creates the game from _POST data
+	 *        Creates the game from _POST data
 	 *
-	 * @param void
-	 * @action creates a game
 	 * @return int game id
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action creates a game
 	 */
 	public function invite( )
 	{
@@ -352,11 +357,11 @@ class Game
 		$_P['small_square_torus'] = (isset($_P['small_square_torus']) && ('yes' == $_P['small_square_torus']));
 		$_P['diagonal_torus'] = (isset($_P['diagonal_torus']) && ('yes' == $_P['diagonal_torus']));
 
-		$extra_info = array(
+		$extra_info = [
 			'small_square_matches' => (bool) $_P['small_square_matches'],
 			'small_square_torus' => (bool) $_P['small_square_torus'],
 			'diagonal_torus' => (bool) $_P['diagonal_torus'],
-		);
+		];
 		call($extra_info);
 
 		$diff = array_compare($extra_info, self::$_EXTRA_INFO_DEFAULTS);
@@ -369,14 +374,15 @@ class Game
 		}
 
 		// create the game
-		$required = array(
-			'white_id' ,
-			'black_id' ,
-		);
+		$required = [
+			'white_id',
+			'black_id',
+		];
 
-		$key_list = array_merge($required, array(
-			'extra_info' ,
-		));
+		$key_list = array_merge($required, [
+			'extra_info',
+		]
+		);
 
 		try {
 			$_DATA = array_clean($_P, $key_list, $required);
@@ -399,10 +405,10 @@ class Game
 
 		$this->id = $insert_id;
 
-		Email::send('invite', $_P['black_id'], array('player' => $GLOBALS['_PLAYERS'][$_P['white_id']]));
+		Email::send('invite', $_P['black_id'], ['player' => $GLOBALS['_PLAYERS'][ $_P['white_id']]]);
 
 		// set the modified date
-		$this->_mysql->insert(self::GAME_TABLE, array('modify_date' => NULL), " WHERE game_id = '{$this->id}' ");
+		$this->_mysql->insert(self::GAME_TABLE, ['modify_date' => NULL], " WHERE game_id = '{$this->id}' ");
 
 		// pull the fresh data
 		$this->_pull( );
@@ -444,10 +450,11 @@ class Game
 
 
 	/** public function choose_piece
-	 *		Selects the next piece in play
+	 *        Selects the next piece in play
 	 *
 	 * @param string piece code
 	 * @return void
+	 * @throws MyException
 	 */
 	public function choose_piece($piece)
 	{
@@ -455,7 +462,7 @@ class Game
 
 		try {
 			$this->_quarto->set_next_piece($piece);
-			Email::send('turn', $this->_players['opponent']['player_id'], array('player' => $this->_players['player']['object']->username));
+			Email::send('turn', $this->_players['opponent']['player_id'], ['player' => $this->_players['player']['object']->username]);
 		}
 		catch (MyException $e) {
 			throw $e;
@@ -464,10 +471,11 @@ class Game
 
 
 	/** public function do_move
-	 *		Places the next piece in the given square
+	 *        Places the next piece in the given square
 	 *
 	 * @param int board index
 	 * @return game outcome
+	 * @throws MyException
 	 */
 	public function do_move($index)
 	{
@@ -483,12 +491,12 @@ class Game
 					$this->state = 'Draw';
 					$this->_players['player']['object']->add_draw( );
 					$this->_players['opponent']['object']->add_draw( );
-					Email::send('draw', $this->_players['opponent']['player_id'], array('player' => $this->_players['player']['object']->username));
+					Email::send('draw', $this->_players['opponent']['player_id'], ['player' => $this->_players['player']['object']->username]);
 				}
 				else {
 					$this->_players['player']['object']->add_win( );
 					$this->_players['opponent']['object']->add_loss( );
-					Email::send('defeated', $this->_players['opponent']['player_id'], array('player' => $this->_players['player']['object']->username));
+					Email::send('defeated', $this->_players['opponent']['player_id'], ['player' => $this->_players['player']['object']->username]);
 				}
 			}
 		}
@@ -513,17 +521,17 @@ class Game
 		$outcome = $this->_quarto->get_outcome( );
 
 		if (isset($outcome[0]) && ('DRAW' == $outcome[0])) {
-			$return = array('Draw', 'won', $outcome);
+			$return = ['Draw', 'won', $outcome];
 		}
 		else {
 			if ( ! $this->is_player($_SESSION['player_id'])) {
-				$return = array($this->_players[$this->_players[$this->turn]['opp_color']]['object']->username.' Wins', 'won', $outcome);
+				$return = [$this->_players[ $this->_players[ $this->turn]['opp_color']]['object']->username.' Wins', 'won', $outcome];
 			}
 			elseif ($_SESSION['player_id'] == $this->_players[$this->turn]['player_id']) {
-				$return = array('You Lost', 'lost', $outcome);
+				$return = ['You Lost', 'lost', $outcome];
 			}
 			else {
-				$return = array('You Won!', 'won', $outcome);
+				$return = ['You Won!', 'won', $outcome];
 			}
 		}
 
@@ -532,10 +540,11 @@ class Game
 
 
 	/** public function resign
-	 *		Resigns the given player from the game
+	 *        Resigns the given player from the game
 	 *
 	 * @param int player id
 	 * @return void
+	 * @throws MyException
 	 */
 	public function resign($player_id)
 	{
@@ -564,7 +573,7 @@ class Game
 		$this->_players['opponent']['object']->add_win( );
 		$this->_players['player']['object']->add_loss( );
 		$this->state = 'Finished';
-		Email::send('resigned', $this->_players['opponent']['object']->id, array('name' => $this->_players['player']['object']->username));
+		Email::send('resigned', $this->_players['opponent']['object']->id, ['name' => $this->_players['player']['object']->username]);
 	}
 
 
@@ -670,10 +679,11 @@ class Game
 
 
 	/** public function nudge
-	 *		Nudges the given player to tke their move
+	 *        Nudges the given player to tke their move
 	 *
-	 * @param void
 	 * @return bool success
+	 * @throws MyException
+	 * @throws MySQLException
 	 */
 	public function nudge( )
 	{
@@ -686,9 +696,9 @@ class Game
 		$nudger = $this->_players['player']['object']->username;
 
 		if ($this->test_nudge( )) {
-			Email::send('nudge', $this->_players['opponent']['player_id'], array('id' => $this->id, 'name' => $this->name, 'player' => $nudger));
+			Email::send('nudge', $this->_players['opponent']['player_id'], ['id' => $this->id, 'name' => $this->name, 'player' => $nudger]);
 			$this->_mysql->delete(self::GAME_NUDGE_TABLE, " WHERE game_id = '{$this->id}' ");
-			$this->_mysql->insert(self::GAME_NUDGE_TABLE, array('game_id' => $this->id, 'player_id' => $this->_players['opponent']['player_id']));
+			$this->_mysql->insert(self::GAME_NUDGE_TABLE, ['game_id' => $this->id, 'player_id' => $this->_players['opponent']['player_id']]);
 			return true;
 		}
 
@@ -697,10 +707,10 @@ class Game
 
 
 	/** public function test_nudge
-	 *		Tests if the current player can be nudged or not
+	 *        Tests if the current player can be nudged or not
 	 *
-	 * @param void
 	 * @return bool player can be nudged
+	 * @throws MySQLException
 	 */
 	public function test_nudge( )
 	{
@@ -708,7 +718,7 @@ class Game
 
 		$player_id = (int) $this->_players['opponent']['player_id'];
 
-		if ($this->get_my_turn( ) || in_array($this->state, array('Finished', 'Draw')) || $this->paused) {
+		if ($this->get_my_turn( ) || in_array($this->state, ['Finished', 'Draw']) || $this->paused) {
 			return false;
 		}
 
@@ -729,12 +739,12 @@ class Game
 		// check the nudge status for this game/player
 		// 'now' is taken from the DB because it may
 		// have a different time from the PHP server
-		$query = "
+		$query = '
 			SELECT NOW( ) AS now
 				, G.modify_date AS move_date
 				, GN.nudged
-			FROM ".self::GAME_TABLE." AS G
-				LEFT JOIN ".self::GAME_NUDGE_TABLE." AS GN
+			FROM ' .self::GAME_TABLE. ' AS G
+				LEFT JOIN ' .self::GAME_NUDGE_TABLE." AS GN
 					ON (GN.game_id = G.game_id
 						AND GN.player_id = '{$player_id}')
 			WHERE G.game_id = '{$this->id}'
@@ -768,9 +778,9 @@ class Game
 	 */
 	public function get_players( )
 	{
-		$players = array( );
+		$players = [];
 
-		foreach (array('white','black') as $color) {
+		foreach (['white', 'black'] as $color) {
 			$player_id = $this->_players[$color]['player_id'];
 			$players[$player_id] = $this->_players[$color];
 			$players[$player_id]['username'] = $this->_players[$color]['object']->username;
@@ -801,7 +811,7 @@ class Game
 	 */
 	public function get_matching_methods( )
 	{
-		$return = array( );
+		$return = [];
 
 		if ($this->_quarto->small_square_matches) {
 			$return[] = 'Small Square';
@@ -834,12 +844,13 @@ class Game
 
 
 	/** protected function _pull
-	 *		Pulls the data from the database
-	 *		and sets up the objects
+	 *        Pulls the data from the database
+	 *        and sets up the objects
 	 *
-	 * @param void
-	 * @action pulls the game data
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action pulls the game data
 	 */
 	protected function _pull( )
 	{
@@ -947,11 +958,12 @@ class Game
 
 
 	/** protected function _save
-	 *		Saves all changed data to the database
+	 *        Saves all changed data to the database
 	 *
-	 * @param void
-	 * @action saves the game data
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action saves the game data
 	 */
 	protected function _save( )
 	{
@@ -1041,12 +1053,12 @@ class Game
 		if ( ! isset($board['board']) || ($board['board'] != $this->_quarto->board)) {
 			call('UPDATED BOARD');
 			$update_modified = true;
-			$this->_mysql->insert(self::GAME_BOARD_TABLE, array('board' => $this->_quarto->board, 'next_piece' => $this->_quarto->next_piece, 'game_id' => $this->id));
+			$this->_mysql->insert(self::GAME_BOARD_TABLE, ['board' => $this->_quarto->board, 'next_piece' => $this->_quarto->next_piece, 'game_id' => $this->id]);
 		}
 
 		// update the game modified date
 		if ($update_modified) {
-			$this->_mysql->insert(self::GAME_TABLE, array('modify_date' => NULL), " WHERE game_id = '{$this->id}' ");
+			$this->_mysql->insert(self::GAME_TABLE, ['modify_date' => NULL], " WHERE game_id = '{$this->id}' ");
 		}
 	}
 
@@ -1077,7 +1089,7 @@ class Game
 	 */
 	protected function _diff($board1, $board2)
 	{
-		$diff = array( );
+		$diff = [];
 		for ($i = 0; $i < 16; ++$i) {
 			if ($board1[$i] != $board2[$i]) {
 				$diff[] = $i;
@@ -1094,17 +1106,19 @@ class Game
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 	/** static public function get_list
-	 *		Returns a list array of all the games in the database
-	 *		with games which need the users attention highlighted
+	 *        Returns a list array of all the games in the database
+	 *        with games which need the users attention highlighted
 	 *
-	 *		NOTE: $player_id is required when not pulling all games
-	 *		(when $all is false)
+	 *        NOTE: $player_id is required when not pulling all games
+	 *        (when $all is false)
 	 *
 	 * @param int optional player's id
 	 * @param bool optional pull all games (vs only given player's games)
 	 * @return array game list (or bool false on failure)
+	 * @throws MyException
+	 * @throws MySQLException
 	 */
-	static public function get_list($player_id = 0, $all = true)
+	public static function get_list($player_id = 0, $all = true)
 	{
 		$Mysql = Mysql::get_instance( );
 
@@ -1164,7 +1178,7 @@ class Game
 
 				$game['my_turn'] = (int) ($player_id == $game[$turn.'_id']);
 
-				if (in_array($game['state'], array('Finished', 'Draw'))) {
+				if (in_array($game['state'], ['Finished', 'Draw'])) {
 					$game['my_turn'] = 0;
 					$game['in_game'] = 1;
 				}
@@ -1183,13 +1197,14 @@ class Game
 
 
 	/** static public function get_invites
-	 *		Returns a list array of all the invites in the database
-	 *		for the given player
+	 *        Returns a list array of all the invites in the database
+	 *        for the given player
 	 *
 	 * @param int player's id
 	 * @return array game list (or bool false on failure)
+	 * @throws MySQLException
 	 */
-	static public function get_invites($player_id)
+	public static function get_invites($player_id)
 	{
 		$Mysql = Mysql::get_instance( );
 
@@ -1222,13 +1237,14 @@ class Game
 
 
 	/** static public function get_count
-	 *		Returns a count of all games in the database,
-	 *		as well as the highest game id (the total number of games played)
+	 *        Returns a count of all games in the database,
+	 *        as well as the highest game id (the total number of games played)
 	 *
-	 * @param void
+	 * @param int $player_id
 	 * @return array (int current game count, int total game count)
+	 * @throws MySQLException
 	 */
-	static public function get_count($player_id = 0)
+	public static function get_count($player_id = 0)
 	{
 		$Mysql = Mysql::get_instance( );
 
@@ -1249,17 +1265,18 @@ class Game
 		";
 		$next = $Mysql->fetch_value($query);
 
-		return array($count, $next);
+		return [$count, $next];
 	}
 
 
 	/** static public function check_turns
-	 *		Checks if it's the given player's turn in any games
+	 *        Checks if it's the given player's turn in any games
 	 *
 	 * @param int player id
 	 * @return int number of games player has a turn in
+	 * @throws MyException
 	 */
-	static public function check_turns($player_id)
+	public static function check_turns($player_id)
 	{
 		call(__METHOD__);
 
@@ -1282,13 +1299,15 @@ class Game
 
 
 	/** public function delete_inactive
-	 *		Deletes the inactive games from the database
+	 *        Deletes the inactive games from the database
 	 *
 	 * @param int age in days
-	 * @action deletes the inactive games
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action deletes the inactive games
 	 */
-	static public function delete_inactive($age)
+	public static function delete_inactive($age)
 	{
 		$Mysql = Mysql::get_instance( );
 
@@ -1308,13 +1327,15 @@ class Game
 
 
 	/** public function delete_finished
-	 *		Deletes the finished games from the database
+	 *        Deletes the finished games from the database
 	 *
 	 * @param int age in days
-	 * @action deletes the finished games
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action deletes the finished games
 	 */
-	static public function delete_finished($age)
+	public static function delete_finished($age)
 	{
 		$Mysql = Mysql::get_instance( );
 
@@ -1335,13 +1356,15 @@ class Game
 
 
 	/** static public function delete
-	 *		Deletes the given game and all related data
+	 *        Deletes the given game and all related data
 	 *
 	 * @param mixed array or csv of game ids
-	 * @action deletes the game and all related data from the database
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action deletes the game and all related data from the database
 	 */
-	static public function delete($ids)
+	public static function delete($ids)
 	{
 		$Mysql = Mysql::get_instance( );
 
@@ -1355,10 +1378,10 @@ class Game
 #			self::write_game_file($id);
 #		}
 
-		$tables = array(
-			self::GAME_BOARD_TABLE ,
-			self::GAME_TABLE ,
-		);
+		$tables = [
+			self::GAME_BOARD_TABLE,
+			self::GAME_TABLE,
+		];
 
 		$Mysql->multi_delete($tables, " WHERE game_id IN (".implode(',', $ids).") ");
 
@@ -1371,13 +1394,15 @@ class Game
 
 
 	/** static public function player_deleted
-	 *		Deletes the games the given players are in
+	 *        Deletes the games the given players are in
 	 *
 	 * @param mixed array or csv of player ids
-	 * @action deletes the players games
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action deletes the players games
 	 */
-	static public function player_deleted($ids)
+	public static function player_deleted($ids)
 	{
 		$Mysql = Mysql::get_instance( );
 
@@ -1402,14 +1427,16 @@ class Game
 
 
 	/** static public function pause
-	 *		Pauses the given games
+	 *        Pauses the given games
 	 *
-	 * @param mixed array or csv of game ids
-	 * @param bool optional pause game (false = unpause)
-	 * @action pauses the games
+	 * @param      $ids
+	 * @param bool $pause
 	 * @return void
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action pauses the games
 	 */
-	static public function pause($ids, $pause = true)
+	public static function pause($ids, $pause = true)
 	{
 		$Mysql = Mysql::get_instance( );
 
@@ -1421,7 +1448,7 @@ class Game
 			throw new MyException(__METHOD__.': No game ids given');
 		}
 
-		$Mysql->insert(self::GAME_TABLE, array('paused' => $pause), " WHERE game_id IN (".implode(',', $ids).") ");
+		$Mysql->insert(self::GAME_TABLE, ['paused' => $pause], " WHERE game_id IN (".implode(',', $ids).") ");
 	}
 
 

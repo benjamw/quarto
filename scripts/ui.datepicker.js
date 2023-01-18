@@ -19,7 +19,7 @@ function Datepicker() {
 	this._inst = []; // List of instances indexed by ID
 	this._curInst = null; // The current instance in use
 	this._disabledInputs = []; // List of date picker inputs that have been disabled
-	this._datepickerShowing = false; // True if the popup picker is showing , false if not
+	this._datepickerShowing = false; // True if the popup picker is showing, false if not
 	this._inDialog = false; // True if showing within a "dialog", false if not
 	this.regional = []; // Available regional settings, indexed by language code
 	this.regional[''] = { // Default regional settings

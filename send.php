@@ -8,9 +8,9 @@ if (isset($_POST['submit'])) {
 	// clean the data
 	$subject = $_POST['subject'];
 	$message = $_POST['message'];
-	$user_ids = $_POST['user_ids'];
-	$send_date = ('' != $_POST['send_date']) ? $_POST['send_date'] : false;
-	$expire_date = ('' != $_POST['expire_date']) ? $_POST['expire_date'] : false;
+	$user_ids = (array) ife($_POST['user_ids'], [], false);
+	$send_date = ife($_POST['send_date'], false, false);
+	$expire_date = ife($_POST['expire_date'], false, false);
 
 	try {
 		$Message->send_message($subject, $message, $user_ids, $send_date, $expire_date);
@@ -32,10 +32,10 @@ if (isset($_POST['submit'])) {
 	}
 }
 
-$message = array(
+$message = [
 	'subject' => '',
 	'message' => '',
-);
+];
 
 if (isset($_GET['id'])) {
 	try {
@@ -58,8 +58,8 @@ if (isset($_GET['id'])) {
 $meta['title'] = 'Message Writer';
 $meta['show_menu'] = false;
 $meta['head_data'] = '
-	<style type="text/css">@import url(css/ui.datepicker.css);</style>
-	<script type="text/javascript" src="scripts/ui.datepicker.js"></script>
+	<style type="text/css">@import url(css/vader/jquery-ui-1.8.23.custom.css);</style>
+	<script type="text/javascript" src="scripts/jquery-ui-1.8.23.datepicker.min.js"></script>
 	<script type="text/javascript" src="scripts/messages.js"></script>
 ';
 
@@ -93,30 +93,30 @@ echo get_header($meta);
 
 ?>
 
-	<div id="content">
+	<div id="content" class="msg">
 		<div class="link_date">
 			<a href="messages.php<?php echo $GLOBALS['_?_DEBUG_QUERY']; ?>">Return to Inbox</a>
 			<?php echo date(Settings::read('long_date')); ?>
 		</div>
-		<form method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>"><div id="formdiv">
+		<form method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>"><div class="formdiv">
 			<input type="hidden" name="token" value="<?php echo $_SESSION['token']; ?>" />
-			<ol>
-				<li>
-					<div class="info">Press and hold CTRL while selecting to select multiple recipients</div>
-					<label for="user_ids">Recipients</label><select name="user_ids[]" id="user_ids" multiple="multiple" size="5">
-					<?php echo $recipient_options; ?>
-					</select>
-				</li>
-				<li><label for="send_date">Send Date</label><input type="text" name="send_date" id="send_date" /> <span class="info">Leave blank to send now</span></li>
-				<li><label for="expire_date">Expiration Date</label><input type="text" name="expire_date" id="expire_date" /> <span class="info">Leave blank to never expire</span></li>
-				<li><label for="subject">Subject</label><input type="text" name="subject" id="subject" value="<?php echo htmlentities($message['subject'], ENT_QUOTES, 'ISO-8859-1', false); ?>" size="50" maxlength="255" /></li>
-				<li><label for="message">Message</label><textarea name="message" id="message" rows="15" cols="50"><?php echo htmlentities($message['message'], ENT_QUOTES, 'ISO-8859-1', false); ?></textarea></li>
-				<li><label>&nbsp;</label><input type="submit" name="submit" value="Send Message" /></li>
-			</ol>
+
+			<div>
+				<div class="info">Press and hold CTRL while selecting to select multiple recipients</div>
+				<label for="user_ids">Recipients</label><select name="user_ids[]" id="user_ids" multiple="multiple" size="5">
+				<?php echo $recipient_options; ?>
+				</select>
+			</div>
+			<div><label for="send_date">Send Date</label><input type="text" name="send_date" id="send_date" /> <span class="info">Leave blank to send now</span></div>
+			<div><label for="expire_date">Expiration Date</label><input type="text" name="expire_date" id="expire_date" /> <span class="info">Leave blank to never expire</span></div>
+			<div><label for="subject">Subject</label><input type="text" name="subject" id="subject" value="<?php echo htmlentities($message['subject'], ENT_QUOTES, 'ISO-8859-1', false); ?>" size="50" maxlength="255" /></div>
+			<div><label for="message">Message</label><textarea name="message" id="message" rows="15" cols="50"><?php echo htmlentities($message['message'], ENT_QUOTES, 'ISO-8859-1', false); ?></textarea></div>
+			<div><label>&nbsp;</label><input type="submit" name="submit" value="Send Message" /></div>
 		</div></form>
 	</div>
 
 <?php
 
+call($GLOBALS);
 echo get_footer( );
 

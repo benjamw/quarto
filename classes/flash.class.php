@@ -30,7 +30,7 @@ class Flash
 	 *
 	 * @param array
 	 */
-	protected $_messages = array( );
+	protected $_messages = [];
 
 
 	/** protected property _location
@@ -57,7 +57,7 @@ class Flash
 	 *
 	 * @var Flash object
 	 */
-	static private $_instance;
+	private static $_instance;
 
 
 
@@ -75,6 +75,12 @@ class Flash
 	protected function __construct( )
 	{
 		$this->reset_debug( );
+	}
+
+
+	public function __toString( )
+	{
+		return 'FLASH- '.implode('; ', $this->_messages( )).' @ '.$this->_location;
 	}
 
 
@@ -119,7 +125,7 @@ class Flash
 	 * @action optionally creates the instance
 	 * @return Flash Object reference
 	 */
-	static public function get_instance( )
+	public static function get_instance( )
 	{
 		if (is_null(self::$_instance)) {
 			if ( ! empty($_SESSION['FLASH']) && $_SESSION['FLASH'] instanceof Flash) {
@@ -145,11 +151,11 @@ class Flash
 	 *			'string' = redirect to given URL [default index.php]
 	 *
 	 * @param string message text
-	 * @param string optional redirect location or false to diable redirection
+	 * @param string optional redirect location or false to disable redirection
 	 * @action optionally redirects to given location and exits script
 	 * @return void
 	 */
-	static public function store($message, $location = 'index.php')
+	public static function store($message, $location = 'index.php')
 	{
 		call(__METHOD__);
 		call($message);
@@ -198,7 +204,7 @@ class Flash
 	 * @param void
 	 * @return string javascript
 	 */
-	static public function retrieve( )
+	public static function retrieve( )
 	{
 		call(__METHOD__);
 
@@ -240,7 +246,7 @@ class Flash
 				//]]></script>';
 		}
 
-		$_this->_messages = array( );
+		$_this->_messages = [];
 
 		return $html;
 	}

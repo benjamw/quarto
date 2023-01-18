@@ -7,10 +7,11 @@
  *
  * @param mixed optional var to output
  * @param bool optional bypass debug value and output anyway
- * @action ouptuts var to screen
+ * @action outputs var to screen
  * @return void
  */
-function call($var = 'Th&F=xUFucreSp2*ezAhe=ApuPR*$axe', $bypass = false, $show_from = true, $new_window = false)
+if ( ! function_exists('call')) {
+function call($var = 'Th&F=xUFucreSp2*ezAhe=ApuPR*$axe', $bypass = false, $show_from = true, $new_window = false, $error = false)
 {
 	if ((( ! defined('DEBUG') || ! DEBUG) || ! empty($GLOBALS['NODEBUG'])) && ! (bool) $bypass) {
 		return false;
@@ -54,7 +55,7 @@ function call($var = 'Th&F=xUFucreSp2*ezAhe=ApuPR*$axe', $bypass = false, $show_
 
 	$j = 0;
 	$html = '';
-	$debug_funcs = array('dump', 'debug');
+	$debug_funcs = ['dump', 'debug'];
 	if ((bool) $show_from) {
 		$called_from = debug_backtrace( );
 
@@ -71,7 +72,7 @@ function call($var = 'Th&F=xUFucreSp2*ezAhe=ApuPR*$axe', $bypass = false, $show_
 			$line1 = $called_from[$j + 1]['line'];
 			$called = "{$file1} : {$line1} called ";
 		}
-		elseif (isset($called_from[$j + 1])) {
+		elseif (isset($called_from[$j + 1]['class'])) {
 			$called = $called_from[$j + 1]['class'].$called_from[$j + 1]['type'].$called_from[$j + 1]['function'].' called ';
 		}
 
@@ -79,7 +80,12 @@ function call($var = 'Th&F=xUFucreSp2*ezAhe=ApuPR*$axe', $bypass = false, $show_
 	}
 
 	if ( ! $new_window) {
-		echo "\n\n<pre style=\"background:#FFF;color:#000;font-size:larger;\">{$html}{$contents}\n<hr /></pre>\n\n";
+		$color = '#000';
+		if ($error) {
+			$color = '#F00';
+		}
+
+		echo "\n\n<pre style=\"background:#FFF;color:{$color};font-size:larger;\">{$html}{$contents}\n<hr /></pre>\n\n";
 	}
 	else { ?>
 		<script language="javascript">
@@ -90,24 +96,28 @@ function call($var = 'Th&F=xUFucreSp2*ezAhe=ApuPR*$axe', $bypass = false, $show_
 		</script>
 	<?php }
 }
-function dump($var = 'Th&F=xUFucreSp2*ezAhe=ApuPR*$axe', $bypass = false, $show_from = true) { call($var, $bypass, $show_from); }
-function debug($var = 'Th&F=xUFucreSp2*ezAhe=ApuPR*$axe', $bypass = true, $show_from = true) { call($var, $bypass, $show_from); }
-
-
+function dump($var = 'Th&F=xUFucreSp2*ezAhe=ApuPR*$axe', $bypass = false, $show_from = true, $new_window = false, $error = false) { call($var, $bypass, $show_from, $new_window, $error); }
+function debug($var = 'Th&F=xUFucreSp2*ezAhe=ApuPR*$axe', $bypass = true, $show_from = true, $new_window = false, $error = false) { call($var, $bypass, $show_from, $new_window, $error); }
+}
 
 /** function load_class
- *		This function automagically loads the class
- *		via the spl_autoload_register function above
- *		as it is instantiated (jit).
+ *    This function automagically loads the class
+ *    via the spl_autoload_register function above
+ *    as it is instantiated (jit).
  *
  * @param string class name
- * @action loads given class name if found
+ *
  * @return bool success
+ * @throws MyException
+ * @action loads given class name if found
  */
 function load_class($class_name) {
 	$class_file = CLASSES_DIR.strtolower($class_name).'.class.php';
 
-	if (file_exists($class_file)) {
+	if (class_exists($class_name)) {
+		return true;
+	}
+	elseif (file_exists($class_file) && is_readable($class_file)) {
 		require_once $class_file;
 		return true;
 	}
@@ -179,5 +189,167 @@ function test_debug( ) {
 	$GLOBALS['_&_DEBUG_QUERY'] = '&DEBUG='.$_GET['DEBUG'];
 	$GLOBALS['_?_DEBUG_QUERY'] = '?DEBUG='.$_GET['DEBUG'];
 	return true;
+}
+
+
+
+/** function expandFEN
+ *		This function expands a packed FEN into a
+ *		string where each index is a valid location
+ *
+ * @param string packed FEN
+ * @return string expanded FEN
+ */
+function expandFEN($FEN)
+{
+	$FEN = preg_replace('/\s+/', '', $FEN); // remove spaces
+
+	$FEN = preg_replace_callback('/\d+/', 'replace_callback', $FEN); // unpack the 0s
+	$xFEN = str_replace('/', '', $FEN); // remove the row separators
+
+	return $xFEN;
+}
+function replace_callback($match) {
+	return (((int) $match[0]) ? str_repeat('0', (int) $match[0]) : $match[0]);
+}
+
+
+
+/** function packFEN
+ *		This function packs an expanded FEN into a
+ *		string that takes up less space
+ *
+ * @param string expanded FEN
+ * @param int [optional] length of rows
+ * @return string packed FEN
+ */
+function packFEN($xFEN, $row_length = 10)
+{
+	$xFEN = preg_replace('/\s+/', '', $xFEN); // remove spaces
+	$xFEN = preg_replace('/\//', '', $xFEN); // remove any row separators
+
+	$xFEN = trim(chunk_split($xFEN, $row_length, '/'), '/'); // add the row separators
+
+	// /e modifier got depricated in PHP 5.5.0
+	if (version_compare(PHP_VERSION, '5.5.0', '>=')) {
+		$FEN = preg_replace_callback('/(0+)/', function($m) { return strlen($m[1]); }, $xFEN); // pack the 0s
+	}
+	else {
+		$FEN = preg_replace('/(0+)/e', "strlen('\\1')", $xFEN); // pack the 0s
+	}
+
+	return $FEN;
+}
+
+
+
+/** function get_index
+ *
+ *	Gets the FEN string index for a 2D location
+ *	of a square array of blocks each containing
+ *	a square array of elements within those blocks
+ *
+ *	This was designed for use within foreach structures
+ *	The first foreach ($i) is the outer blocks, and the
+ *	second ($j)	is for the inner elements.
+ *
+ *	Example Structure:
+ *		+----+----+----++----+----+----+
+ *		|  0 |  1 |  2 ||  3 |  4 |  5 |
+ *		+----+----+----++----+----+----+
+ *		|  6 |  7 |  8 ||  9 | 10 | 11 |
+ *		+----+----+----++----+----+----+
+ *		| 12 | 13 | 14 || 15 | 16 | 17 |
+ *		+====+====+====++====+====+====+
+ *		| 18 | 19 | 20 || 21 | 22 | 23 |
+ *		+----+----+----++----+----+----+
+ *		| 24 | 25 | 26 || 27 | 28 | 29 |
+ *		+----+----+----++----+----+----+
+ *		| 30 | 31 | 32 || 33 | 34 | 35 |
+ *		+----+----+----++----+----+----+
+ *
+ *	Where $i = 2 (bottom left big block)
+ *	  and $j = 5 (center element)
+ *	 $blocks = 2 (number of blocks per side)
+ *	  $elems = 3 (numer of elements per side in each block)
+ *	will return 25 (the index of the string)
+ *
+ * @param int the current block number
+ * @param int the current element number
+ * @param int the number of blocks per side
+ * @param int the number of elements per side per block
+ * @return int the FEN string index
+ */
+function get_index($i, $j, $blocks = 3, $elems = 3) {
+	$bits = [
+		($j % $elems), // across within block (across elems)
+		((int) floor($j / $elems) * $blocks * $elems), // down within block (down elems)
+		(($i % $blocks) * $elems), // across blocks
+		((int) floor($i / $blocks) * $blocks * $elems * $elems), // down blocks
+  ];
+
+	return array_sum($bits);
+}
+
+
+
+/** function ife
+ *		if-else
+ *		This function returns the value if it exists (or is optionally not empty)
+ *		or a default value if it does not exist (or is empty)
+ *
+ * @param mixed var to test
+ * @param mixed optional default value
+ * @param bool optional allow empty value
+ * @param bool optional change the passed reference var
+ * @return mixed $var if exists (and not empty) or default otherwise
+ */
+function ife( & $var, $default = null, $allow_empty = true, $change_reference = false) {
+	if ( ! isset($var) || ( ! (bool) $allow_empty && empty($var))) {
+		if ((bool) $change_reference) {
+			$var = $default; // so it can also be used by reference
+		}
+
+		return $default;
+	}
+
+	return $var;
+}
+
+
+
+/** function ifer
+ *		if-else reference
+ *		This function returns the value if it exists (or is optionally not empty)
+ *		or a default value if it does not exist (or is empty)
+ *		It also changes the reference var
+ *
+ * @param mixed var to test
+ * @param mixed optional default value
+ * @param bool optional allow empty value
+ * @action updates/sets the reference var if needed
+ * @return mixed $var if exists (and not empty) or default otherwise
+ */
+function ifer( & $var, $default = null, $allow_empty = true) {
+	return ife($var, $default, $allow_empty, true);
+}
+
+
+
+/** function ifenr
+ *		if-else non-reference
+ *		This function returns the value if it is not empty
+ *		or a default value if it is empty
+ *
+ * @param mixed var to test
+ * @param mixed optional default value
+ * @return mixed $var if not empty or default otherwise
+ */
+function ifenr($var, $default = null) {
+	if (empty($var)) {
+		return $default;
+	}
+
+	return $var;
 }
 

@@ -47,7 +47,7 @@ class Email
 	 *
 	 * @var Email object
 	 */
-	static private $_instance;
+	private static $_instance;
 
 
 	/** protected property email_data
@@ -55,7 +55,7 @@ class Email
 	 *
 	 * @var array
 	 */
-	protected $email_data = array( );
+	protected $email_data = [];
 
 
 
@@ -73,7 +73,7 @@ class Email
 	protected function __construct( )
 	{
 		if ( ! $this->email_data && defined('INCLUDE_DIR')) {
-			require_once INCLUDE_DIR.'inc.email.php';
+			require INCLUDE_DIR.'inc.email.php';
 			$this->email_data = $GLOBALS['__EMAIL_DATA'];
 			unset($GLOBALS['__EMAIL_DATA']);
 		}
@@ -81,15 +81,18 @@ class Email
 
 
 	/** protected function _send
-	 *		Sends email messages of various types [optional data contents]
+	 *        Sends email messages of various types [optional data contents]
 	 *
-	 * @param string message type
-	 * @param mixed player id OR email address OR mixed array of both
-	 * @param array optional message data
-	 * @action send emails
+	 * @param       $type
+	 * @param       $to
+	 * @param array $data
+	 *
 	 * @return bool success
+	 * @throws MyException
+	 * @throws MySQLException
+	 * @action send emails
 	 */
-	protected function _send($type, $to, $data = array( ))
+	protected function _send($type, $to, $data = [])
 	{
 		call(__METHOD__);
 		call($type);
@@ -105,7 +108,7 @@ class Email
 
 			return $return;
 		}
-		// $to is an email address (or comma seperated email addresses)
+		// $to is an email address (or comma separated email addresses)
 		elseif (preg_match('/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i', $to)) {
 			$email = $to;
 		}
@@ -134,14 +137,14 @@ class Email
 		$site_name = Settings::read('site_name');
 
 		if ( ! in_array($type, array_keys($this->email_data))) {
-			throw new MyException(__METHOD__.': Trying to send email with unsupprted type ('.$type.')');
+			throw new MyException(__METHOD__.': Trying to send email with unsupported type ('.$type.')');
 		}
 
 		$subject = $this->email_data[$type]['subject'];
 		$message = $this->email_data[$type]['message'];
 
 		// replace the meta vars
-		$replace = array(
+		$replace = [
 			'/\[\[\[GAME_NAME\]\]\]/' => GAME_NAME,
 			'/\[\[\[game_name\]\]\]/' => @$data['name'],
 			'/\[\[\[site_name\]\]\]/' => $site_name,
@@ -149,7 +152,7 @@ class Email
 			'/\[\[\[sender\]\]\]/' => @$data['player'],
 			'/\[\[\[winner\]\]\]/' => @$data['winner'],
 			'/\[\[\[export_data\]\]\]/' => var_export($data, true),
-		);
+		];
 
 		$message = preg_replace(array_keys($replace), $replace, $message);
 
@@ -228,7 +231,7 @@ and should not be replied to.
 	 * @action optionally creates the instance
 	 * @return Email Object reference
 	 */
-	static public function get_instance( )
+	public static function get_instance( )
 	{
 		if (is_null(self::$_instance)) {
 			self::$_instance = new Email( );
@@ -239,16 +242,17 @@ and should not be replied to.
 
 
 	/** static public function send
-	 *		Static access for _send
+	 *        Static access for _send
 	 *
-	 * @param string message type
-	 * @param mixed player id OR email address OR mixed array of both
-	 * @param array optional message data
-	 * @action send emails
+	 * @param       $type
+	 * @param       $to
+	 * @param array $data
 	 * @return bool success
-	 * @see _send
+	 * @throws MyException
+	 * @action send emails
+	 * @see    _send
 	 */
-	static public function send($type, $to, $data = array( ))
+	public static function send($type, $to, $data = [])
 	{
 		call(__METHOD__);
 		call($type);

@@ -12,7 +12,7 @@ $turn_msg_count = $message_count + $turn_count;
 
 $meta['title'] = 'Game List';
 $meta['head_data'] = '
-	<script type="text/javascript" src="scripts/jquery.jplayer.js"></script>
+	<script type="text/javascript" src="scripts/jquery.jplayer.min.js"></script>
 	<script type="text/javascript" src="scripts/index.js"></script>
 	<script type="text/javascript">//<![CDATA[
 		var turn_msg_count = '.$turn_msg_count.';
@@ -28,22 +28,22 @@ $list = Game::get_list($_SESSION['player_id']);
 
 $contents = '';
 
-$table_meta = array(
-	'sortable' => true ,
-	'no_data' => '<p>There are no games to show</p>' ,
-	'caption' => 'Current Games' ,
-);
-$table_format = array(
-	array('SPECIAL_HTML', 'true', 'id="g[[[game_id]]]"') ,
-	array('SPECIAL_CLASS', '(1 == [[[my_turn]]])', 'highlight') ,
-	array('SPECIAL_CLASS', '(0 == [[[in_game]]])', 'lowlight') ,
+$table_meta = [
+	'sortable' => true,
+	'no_data' => '<p>There are no games to show</p>',
+	'caption' => 'Current Games',
+];
+$table_format = [
+	['SPECIAL_HTML', 'true', 'id="g[[[game_id]]]"'],
+	['SPECIAL_CLASS', '(1 == \'[[[my_turn]]]\')', 'highlight'],
+	['SPECIAL_CLASS', '(0 == \'[[[in_game]]]\')', 'lowlight'],
 
-	array('ID', 'game_id') ,
-	array('State', '###(([[[paused]]]) ? \'Paused\' : (([[[my_turn]]]) ? \'<span class="highlight">[[[state]]]</span>\' : \'[[[state]]]\'))') ,
-	array('Player #1', '###((\'[[[white]]]\' == $GLOBALS[\'Player\']->username) ? \'<span class="highlight">[[[white]]]</span>\' : \'[[[white]]]\')') ,
-	array('Player #2', '###((\'[[[black]]]\' == $GLOBALS[\'Player\']->username) ? \'<span class="highlight">[[[black]]]</span>\' : \'[[[black]]]\')') ,
-	array('Last Move', '###date(Settings::read(\'long_date\'), strtotime(\'[[[last_move]]]\'))', null, ' class="date"') ,
-);
+	['ID', 'game_id'],
+	['State', '###(([[[paused]]]) ? \'Paused\' : (([[[my_turn]]]) ? \'<span class="highlight">[[[state]]]</span>\' : \'[[[state]]]\'))'],
+	['Player #1', '###((\'[[[white]]]\' == $GLOBALS[\'Player\']->username) ? \'<span class="highlight">[[[white]]]</span>\' : \'[[[white]]]\')'],
+	['Player #2', '###((\'[[[black]]]\' == $GLOBALS[\'Player\']->username) ? \'<span class="highlight">[[[black]]]</span>\' : \'[[[black]]]\')'],
+	['Last Move', '###date(Settings::read(\'long_date\'), strtotime(\'[[[last_move]]]\'))', null, ' class="date"'],
+];
 $contents .= '
 	<div class="tableholder">
 		'.get_table($table_format, $list, $table_meta).'
@@ -54,7 +54,7 @@ $Chat = new Chat($_SESSION['player_id'], 0);
 $chat_data = $Chat->get_box_list( );
 
 // temp storage for gravatar imgs
-$gravatars = array( );
+$gravatars = [];
 
 $lobby = '
 	<div id="lobby">
@@ -99,13 +99,17 @@ $lobby = '
 
 $contents .= $lobby;
 
-$hints = array(
-	'Select a game from the list and resume play by clicking anywhere on the row.' ,
-	'<span class="highlight">Colored entries</span> indicate that it is your turn.' ,
-	'<span class="warning">WARNING!</span><br />Games will be deleted after '.Settings::read('expire_games').' days of inactivity.' ,
-);
+$hints = [
+	/** @lang text */
+	'Select a game from the list and resume play by clicking anywhere on the row.',
+	'Invite another player to a game by clicking on the Invitations menu item.',
+	'<span class="highlight">Highlighted entries</span> indicate that it is your turn.',
+	'<span class="warning">WARNING!</span><br />Games will be deleted after '.Settings::read('expire_games').' days of inactivity.',
+	'Finished games will be deleted after '.Settings::read('expire_finished_games').' days.',
+];
 
 echo get_header($meta);
 echo get_item($contents, $hints, $meta['title']);
+call($GLOBALS);
 echo get_footer($meta);
 

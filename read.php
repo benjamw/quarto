@@ -91,7 +91,7 @@ echo get_header($meta);
 
 ?>
 
-	<div id="content">
+	<div id="content" class="msg">
 		<div class="link_date">
 			<a href="messages.php">Return to Inbox</a>
 			Sent: <?php echo @ifdateor(Settings::read('long_date'), strtotime($message['send_date']), strtotime($message['create_date'])); ?>
@@ -142,7 +142,7 @@ echo get_header($meta);
 				continue;
 			}
 
-			$classes = array( );
+			$classes = [];
 			if (is_null($recipient['view_date'])) {
 				$classes[] = 'unread';
 			}
@@ -174,5 +174,6 @@ echo get_header($meta);
 
 <?php
 
+call($GLOBALS);
 echo get_footer( );
 

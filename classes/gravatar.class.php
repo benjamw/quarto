@@ -73,9 +73,9 @@ class Gravatar
 	/** static private property _instance
 	 *		Holds the instance of this object
 	 *
-	 * @var Flash object
+	 * @var Gravatar object
 	 */
-	static private $_instance;
+	private static $_instance;
 
 
 	/**
@@ -90,7 +90,7 @@ class Gravatar
 	 * @action instantiates object
 	 * @return void
 	 */
-	public function __construct($settings = array( ))
+	public function __construct($settings = [])
 	{
 		foreach ($settings as $key => $value) {
 			switch ($key) {
@@ -114,7 +114,7 @@ class Gravatar
 				case 'rating' :
 					$value = strtolower($value);
 
-					if ( ! in_array($value, array('g', 'pg', 'r', 'x'))) {
+					if ( ! in_array($value, ['g', 'pg', 'r', 'x'])) {
 						unset($settings[$key]);
 						break;
 					}
@@ -123,7 +123,7 @@ class Gravatar
 				case 'default' :
 					$value = strtolower($value);
 
-					if ( ! in_array($value, array('identicon', 'monsterid', 'wavatar', ''))
+					if ( ! in_array($value, ['identicon', 'monsterid', 'wavatar', ''])
 						&& ! preg_match('%^http://%i', $value))
 					{
 						unset($settings[$key]);
@@ -139,11 +139,11 @@ class Gravatar
 
 		// you can set your own default settings here
 		// or leave blank to use gravatar.com's defaults
-		$defaults = array(
+		$defaults = [
 			'size' => 45,
 			'rating' => 'pg',
 			'default' => 'identicon',
-		);
+		];
 
 		$opts = array_merge($defaults, $settings);
 
@@ -156,17 +156,19 @@ class Gravatar
 
 
 	/** public function __get
-	 *		Class getter
-	 *		Returns the requested property if the
-	 *		requested property is not _private
+	 *        Class getter
+	 *        Returns the requested property if the
+	 *        requested property is not _private
 	 *
 	 * @param string property name
+	 *
 	 * @return mixed property value
+	 * @throws MyException
 	 */
 	public function __get($property)
 	{
 		if ( ! property_exists($this, $property)) {
-			throw new MyException(__METHOD__.': Trying to access non-existant property ('.$property.')', 2);
+			throw new MyException(__METHOD__.': Trying to access non-existent property ('.$property.')', 2);
 		}
 
 		if ('_' === $property[0]) {
@@ -178,19 +180,20 @@ class Gravatar
 
 
 	/** public function __set
-	 *		Class setter
-	 *		Sets the requested property if the
-	 *		requested property is not _private
+	 *        Class setter
+	 *        Sets the requested property if the
+	 *        requested property is not _private
 	 *
-	 * @param string property name
-	 * @param mixed property value
-	 * @action optional validation
+	 * @param $property
+	 * @param $value
 	 * @return bool success
+	 * @throws MyException
+	 * @action optional validation
 	 */
 	public function __set($property, $value)
 	{
 		if ( ! property_exists($this, $property)) {
-			throw new MyException(__METHOD__.': Trying to access non-existant property ('.$property.')', 3);
+			throw new MyException(__METHOD__.': Trying to access non-existent property ('.$property.')', 3);
 		}
 
 		if ('_' === $property[0]) {
@@ -240,7 +243,7 @@ class Gravatar
 	 * @action optionally creates the instance
 	 * @return Log Object reference
 	 */
-	static public function get_instance($settings = array( ))
+	public static function get_instance($settings = [])
 	{
 		if (is_null(self::$_instance)) {
 			self::$_instance = new Gravatar($settings);
@@ -257,7 +260,7 @@ class Gravatar
 	 * @param array optional settings
 	 * @return string image src
 	 */
-	static public function src($email = null, $settings = array( ))
+	public static function src($email = null, $settings = [])
 	{
 		$_this = self::get_instance($settings);
 

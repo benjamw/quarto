@@ -26,7 +26,7 @@ th {
 	cursor: pointer;
 }
 
-tr:hover > td ,
+tr:hover > td,
 tr.alt:hover > td {
 	background-color: #444;
 	color: #FFF;

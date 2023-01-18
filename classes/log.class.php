@@ -53,9 +53,9 @@ class Log
 	/** static private property _instance
 	 *		Holds the instance of this object
 	 *
-	 * @var Flash object
+	 * @var Log object
 	 */
-	static private $_instance;
+	private static $_instance;
 
 
 
@@ -79,17 +79,19 @@ class Log
 
 
 	/** public function __get
-	 *		Class getter
-	 *		Returns the requested property if the
-	 *		requested property is not _private
+	 *        Class getter
+	 *        Returns the requested property if the
+	 *        requested property is not _private
 	 *
 	 * @param string property name
+	 *
 	 * @return mixed property value
+	 * @throws MyException
 	 */
 	public function __get($property)
 	{
 		if ( ! property_exists($this, $property)) {
-			throw new MyException(__METHOD__.': Trying to access non-existant property ('.$property.')', 2);
+			throw new MyException(__METHOD__.': Trying to access non-existent property ('.$property.')', 2);
 		}
 
 		if ('_' === $property[0]) {
@@ -101,19 +103,20 @@ class Log
 
 
 	/** public function __set
-	 *		Class setter
-	 *		Sets the requested property if the
-	 *		requested property is not _private
+	 *        Class setter
+	 *        Sets the requested property if the
+	 *        requested property is not _private
 	 *
-	 * @param string property name
-	 * @param mixed property value
-	 * @action optional validation
+	 * @param $property
+	 * @param $value
 	 * @return bool success
+	 * @throws MyException
+	 * @action optional validation
 	 */
 	public function __set($property, $value)
 	{
 		if ( ! property_exists($this, $property)) {
-			throw new MyException(__METHOD__.': Trying to access non-existant property ('.$property.')', 3);
+			throw new MyException(__METHOD__.': Trying to access non-existent property ('.$property.')', 3);
 		}
 
 		if ('_' === $property[0]) {
@@ -179,7 +182,7 @@ class Log
 	 * @action optionally creates the instance
 	 * @return Log Object reference
 	 */
-	static public function get_instance( )
+	public static function get_instance( )
 	{
 		if (is_null(self::$_instance)) {
 			self::$_instance = new Log( );
@@ -198,14 +201,14 @@ class Log
 	 * @param bool optional include backtrace info
 	 * @return void
 	 */
-	static public function write($message = '', $type = null, $backtrace = null)
+	public static function write($message = '', $type = null, $backtrace = null)
 	{
 		if (empty($GLOBALS['_LOGGING'])) {
 			return;
 		}
 
 		if (is_array($message)) {
-			extract(array_merge(array('type' => null, 'backtrace' => null), $message));
+			extract(array_merge(['type' => null, 'backtrace' => null], $message));
 		}
 
 		$_this = self::get_instance( );

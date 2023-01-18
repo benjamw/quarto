@@ -6,7 +6,7 @@
 
 	<p>Small Square Torus is only valid if Small Square Matching is enabled.<?p>
 
-	<p>There are 6 possible areas in addition to the 9 via normal small square matching that can be matched with this method and matches with this method are denoted by the upper-left square of the matching group.</p>
+	<p>There are 7 possible areas in addition to the 9 via normal small square matching that can be matched with this method and matches with this method are denoted by the upper-left square of the matching group.</p>
 
 	<p>Please note that the "upper-left" square will be on the bottom row or right column because the group will wrap around the edge of the board.</p>
 

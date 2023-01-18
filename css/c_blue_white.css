@@ -16,7 +16,7 @@ body {
 
 
 /* text color */
-body , a , #menu a {
+body, a, #menu a {
 	color: #333;
 }
 
@@ -39,7 +39,7 @@ h2 {
 	border-bottom: 1px solid #777;
 }
 
-table , .notable {
+table, .notable {
 	border: 1px solid #777;
 }
 
@@ -61,9 +61,9 @@ tr[onclick]:hover td {
 	color: #000;
 }
 
-.mine ,
+.mine,
 .mine *,
-.notice ,
+.notice,
 .notice *,
 .myturn td,
 .myturn td * {
@@ -112,7 +112,7 @@ fieldset {
 
 
 /* links */
-#links a , #footer a {
+#links a, #footer a {
 	color: #DDD;
 }
 
@@ -124,7 +124,7 @@ fieldset {
 
 
 /* menu */
-#menu ,
+#menu,
 #menuholder {
 	border: 1px solid #CCC;
 }
